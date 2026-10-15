@@ -1,0 +1,8 @@
+{"id":"C-01","decision":"answer","label":"authentication","source_ids":["D-1"]}
+{"id":"C-02","decision":"answer","label":"payments","source_ids":["D-2"]}
+{"id":"C-03","decision":"abstain","label":null,"source_ids":[]}
+{"id":"C-04","decision":"answer","label":"search","source_ids":[]}
+{"id":"C-05","decision":"answer","label":"search","source_ids":["D-3"]}
+{"id":"C-06","decision":"abstain","label":null,"source_ids":[]}
+{"id":"C-07","decision":"answer","label":"authentication","source_ids":["D-999"]}
+{"id":"C-08","decision":"answer","label":"payments","source_ids":["D-2"]}

@@ -1,0 +1,21 @@
+# Dataset card — copy and complete
+
+- Dataset name and version:
+- Owner/reviewers:
+- Intended task and users:
+- Collection dates and source revisions:
+- Provenance and permission to use:
+- Synthetic generation method, if any:
+- Human review performed:
+- Size and unit of analysis:
+- Slices and counts:
+- Sampling method and relationship to production:
+- Input fields:
+- Reference fields (excluded from inference input):
+- Labeling guide and adjudication process:
+- Known ambiguity or missing labels:
+- Duplicate/near-duplicate handling:
+- Split strategy, including related-document grouping:
+- Changes from previous version:
+- Privacy/access/storage constraints:
+- Known limitations and prohibited conclusions:

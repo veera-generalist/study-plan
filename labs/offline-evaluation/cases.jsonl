@@ -1,0 +1,8 @@
+{"id":"C-01","slice":"routine","expected_decision":"answer","expected_label":"authentication","allowed_source_ids":["D-1"],"citation_required":true}
+{"id":"C-02","slice":"routine","expected_decision":"answer","expected_label":"payments","allowed_source_ids":["D-2"],"citation_required":true}
+{"id":"C-03","slice":"missing_evidence","expected_decision":"abstain","expected_label":null,"allowed_source_ids":[],"citation_required":false}
+{"id":"C-04","slice":"missing_evidence","expected_decision":"abstain","expected_label":null,"allowed_source_ids":[],"citation_required":false}
+{"id":"C-05","slice":"routine","expected_decision":"answer","expected_label":"search","allowed_source_ids":["D-3"],"citation_required":true}
+{"id":"C-06","slice":"ambiguous","expected_decision":"abstain","expected_label":null,"allowed_source_ids":[],"citation_required":false}
+{"id":"C-07","slice":"source_validation","expected_decision":"answer","expected_label":"authentication","allowed_source_ids":["D-1"],"citation_required":true}
+{"id":"C-08","slice":"source_validation","expected_decision":"answer","expected_label":"payments","allowed_source_ids":["D-2","D-4"],"citation_required":true}
