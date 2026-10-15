@@ -8,12 +8,13 @@ Install Git and a supported Python 3 release (3.11 or newer is suitable for the 
 git clone https://github.com/veera-generalist/study-plan.git
 cd study-plan
 python3 --version
+python3 scripts/run_module_examples.py
 python3 labs/offline-evaluation/evaluate.py
 python3 -m unittest discover -s labs/offline-evaluation -p 'test_*.py' -v
 python3 scripts/check_course.py
 ```
 
-The evaluator writes a report under the lab's ignored reports directory. Its default run uses stored synthetic predictions, so it makes no network requests.
+The module-example runner verifies that the displayed lesson code matches the saved scripts and executes their assertions. It should report twelve passing examples. The evaluator writes a report under the lab's ignored reports directory. Its default run uses stored synthetic predictions and intentionally exits 1 because two cases fail; see the lab README. Neither command makes network requests.
 
 ## Environment for later exercises
 
