@@ -1,5 +1,7 @@
 # Pre-push course review
 
+> Historical technical review. The subsequent beginner rewrite replaces Modules 01–03 and preserves their previous code in optional advanced notes. See the current [course home](README.md) and [validation scope](VALIDATION.md). Modules 04–12 remain the earlier technical draft.
+
 Reviewed: **2026-10-15**. Scope: all twelve lesson/example pairs, glossary navigation, setup, roadmap, project briefs, templates, attribution records, executable checks, and primary reference destinations.
 
 This review produced local fixes. It did not publish or push changes.

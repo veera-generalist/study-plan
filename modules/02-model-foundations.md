@@ -1,162 +1,235 @@
-# Module 02 — Models, tokens, embeddings, and ML basics
+# Module 02 — Understanding and comparing language models
 
-[Course index](../README.md) · Weeks 3–4 · Prerequisite: Module 01
+[Previous: getting started](01-python-engineering.md) · [Course home](../README.md) · [Next: writing useful prompts](03-prompting-and-development.md)
 
-**Terms to know:** [LLM](../GLOSSARY.md#llm) · [Token](../GLOSSARY.md#token) · [Context window](../GLOSSARY.md#context-window) · [Embedding](../GLOSSARY.md#embedding) · [Inference](../GLOSSARY.md#inference) · [Temperature](../GLOSSARY.md#temperature)
+**Before you begin:** read Module 01. You do not need Python, mathematics, or a second AI subscription.
 
-## Outcomes
+## Introduction
 
-Explain model behavior at an engineering level and calculate classification metrics. You do not need to train a foundation model to build a reliable AI application.
+In the first lesson, you planned an assistant for Maple Books. It answers questions using a small set of shop facts.
 
-## Lesson 1: A language model in an application
+Now you face two practical questions:
 
-A generative language model estimates probabilities over continuations conditioned on its input. Inference runs the model; training changes its parameters. Instruction tuning teaches patterns of responding to instructions, but does not guarantee factual correctness or compliance in every situation.
+- Why might an assistant produce a wrong answer even when it writes clearly?
+- How would you decide which model is suitable for your application?
 
-Tokenizers divide text into model-specific units. A token may be a word fragment, punctuation, or another unit. The same visible text can have different token counts under different tokenizers. Context limits constrain supplied instructions, history, retrieved content, tool messages, and generated content according to the model's interface.
+This lesson gives you a practical explanation of language models so their behavior becomes easier to understand.
 
-Sampling selects among possible tokens. Lower temperature can reduce sampling variation when supported, but does not guarantee identical behavior across service updates, infrastructure, or all execution conditions. Record supported settings rather than assuming all models expose the same controls.
+## Learning objectives
 
-## Lesson 2: Embeddings and retrieval
+By the end, you should be able to:
 
-An embedding maps an item into a numeric vector. A similarity measure helps retrieve related items. Semantic similarity is not a truth test: “roll back after five failures” and “never roll back after five failures” may be close in topic while differing in meaning.
+1. Describe, in simple terms, how a language model produces text.
+2. Explain why supplying relevant information matters.
+3. Recognize that different answers can express the same correct meaning.
+4. Compare two sets of responses using the same tasks.
 
-A Transformer uses attention to combine information from positions in a sequence. For application work, understand the consequences: context management matters, information can be overlooked, and long input does not guarantee complete use of all evidence.
+## Scenario: choosing help for Maple Books
 
-## Lesson 3: Basic ML reasoning
+The shop information is unchanged:
 
-Training data fits parameters; development data guides choices; held-out evaluation estimates behavior after those choices. Repeatedly optimizing against a held-out set turns it into development data in practice.
+> - Open Monday to Saturday, 10 a.m. to 6 p.m.
+> - Closed on Sunday.
+> - Undamaged books can be returned within 14 days of purchase.
+> - A receipt is required for a return.
+> - Delivery within Riverton takes three working days.
 
-For a chosen positive class:
+You want an assistant that can explain these facts clearly and handle questions the information does not answer.
 
-- Precision = true positives / predicted positives.
-- Recall = true positives / actual positives.
-- F1 is the harmonic mean of precision and recall when defined.
-- Accuracy is the fraction of all predictions that are correct.
+A model that writes an impressive poem might be useful for creative work. That alone does not establish whether it follows a shop policy. Your choice should reflect the task you are building.
 
-Choose how to report undefined metrics when a denominator is zero. Do not silently convert “not measured” into perfect quality.
+## Lesson
 
-## Worked example
+### 1. A model learns patterns during training
 
-There are 10 urgent bugs among 100 reports. A classifier marks 12 urgent: 8 are truly urgent and 4 are not. Precision is 8/12, about 67%; recall is 8/10, 80%. It misses two urgent bugs. Overall accuracy is 94%, which hides that operationally important weakness.
+**Training** is the process through which a model's behavior is learned from examples.
 
-## Detailed tutorial: understanding what the model is doing
+For language models, those examples can help the model learn relationships among words, ideas, instructions, and kinds of writing. The exact training process differs across models.
 
-### 1. From text to a generated response
+You can then use a trained model for many requests: explain a paragraph, summarize a policy, draft a message, or propose a plan.
 
-A typical generative language-model request begins by converting content into token IDs. An embedding layer maps IDs into numeric representations. Transformer layers transform those representations using attention and other operations. A language-model output head produces scores, called logits, for candidate next tokens. A decoding procedure selects a token and repeats.
+Calling the model to produce a response is called **inference**. For now, remember:
 
-This is a simplified account of a text-generating Transformer, not a complete description of every model architecture. It explains several practical facts. The model does not search a database of guaranteed truths on every token. Plausible continuations may include invented details. A complete response is built through sequential choices rather than retrieved as one verified fact.
+- Training is how the model's learned behavior is developed.
+- Inference is using the trained model.
 
-Distinguish pretraining from instruction tuning and inference. Pretraining learns broad statistical structure from training examples. Instruction tuning further shapes response behavior. Inference uses already learned parameters. Adding documents to a prompt changes the inference context; it does not normally update the model's weights.
+You can build many applications using an existing model. Training your own model is not a prerequisite for getting started.
 
-### 2. Why tokenization matters to QA
+### 2. Text is processed in smaller units
 
-“BUG-1042” may become several tokens, and a whitespace split is not a reliable model token count. Different languages and identifiers can tokenize differently. A context-budget test should use the tokenizer associated with the chosen model, or the provider's documented counting mechanism.
+A model processes content using units called **tokens**.
 
-Budget the complete request: instructions, history, retrieved passages, tool definitions/results, and any required output allowance. Exact accounting rules vary by interface. A huge history may force truncation of the very message defining the task. A long document may be accepted but poorly used. Acceptance of input and successful use of evidence require different checks.
+A token can be a word, part of a word, punctuation, or another unit. Do not assume one token always equals one word.
 
-Construct boundary cases around unusually long identifiers, pasted logs, multilingual text, and repeated tool messages. Inspect which content survives your application's context-management logic.
+As text is generated, the model produces successive units using what it learned and the information available in the request. Those units form the response you read.
 
-### 3. Logits, probabilities, and temperature
+This process can produce coherent explanations and useful reasoning. It does not automatically verify every statement against an authoritative source.
 
-Softmax converts a vector of logits into positive numbers summing to one. For logit z_i, a simplified temperature-adjusted probability is exp(z_i/T) divided by the sum across candidates. Subtracting the largest scaled logit before exponentiating improves numerical stability without changing the ratio.
+That is why a response can sound convincing while giving the wrong Sunday opening hours.
 
-Lower positive temperature concentrates mass on high-scoring options. It does not make an incorrect highest-scoring option correct. Temperature zero, where supported, is typically treated specially by the serving implementation; our example rejects it rather than attempting division by zero.
+You do not need to count tokens for today's exercise. Knowing that models have an input/output budget will become useful when you build applications.
 
-Token probabilities are probabilities of continuations under the model. They are not automatically calibrated probabilities that an entire generated answer is factually correct.
+### 3. The available information affects the answer
 
-### 4. Embeddings without the mystery
+The instructions, messages, and documents available for a request are often called its **context**.
 
-Think of an embedding as a location in a learned representation space. Cosine similarity measures directional alignment: dot product divided by the product of vector lengths. Identical directions have similarity one; orthogonal directions zero. Real embedding models can represent much more than the two-dimensional example below.
+If you ask:
 
-If two sentences discuss rollback policy, they can be semantically close even when one says to roll back and the other says not to. Similarity helps select candidate evidence. It cannot replace contradiction checking, authorization, or factual verification.
+~~~text
+What is the return policy at Maple Books?
+~~~
 
-### 5. Runnable numeric example
+without supplying the shop facts, the model may not have reliable information about our fictional business. It might produce something resembling a common retail policy.
 
-```python
-"""Module 02: softmax, vector similarity, and a classifier confusion count."""
-from math import exp, sqrt
+Now provide the actual policy:
 
+~~~text
+Maple Books accepts returns of undamaged books within 14 days
+of purchase. A receipt is required.
 
-def softmax(logits, temperature=1.0):
-    if temperature <= 0:
-        raise ValueError("This demonstration requires positive temperature")
-    scaled = [value / temperature for value in logits]
-    largest = max(scaled)
-    weights = [exp(value - largest) for value in scaled]
-    total = sum(weights)
-    return [value / total for value in weights]
+Question: What is the return policy?
+~~~
 
+You have given the model relevant evidence. That creates a better basis for answering, although you still need to check the response.
 
-def cosine(left, right):
-    if len(left) != len(right):
-        raise ValueError("Vector dimensions differ")
-    denominator = sqrt(sum(x*x for x in left) * sum(y*y for y in right))
-    if denominator == 0:
-        raise ValueError("Zero vectors have undefined cosine similarity")
-    return sum(x*y for x, y in zip(left, right)) / denominator
+Supplying a policy in a conversation is different from training the model on a new dataset. The policy is available for that interaction; you should not assume it has become permanent knowledge.
 
+### 4. A model can have too much information to handle at once
 
-labels = [1, 1, 1, 1, 0, 0]
-predictions = [1, 1, 1, 0, 1, 0]
-tp = sum(y == 1 and p == 1 for y, p in zip(labels, predictions))
-fp = sum(y == 0 and p == 1 for y, p in zip(labels, predictions))
-fn = sum(y == 1 and p == 0 for y, p in zip(labels, predictions))
-precision = tp / (tp + fp)
-recall = tp / (tp + fn)
-assert precision == 0.75 and recall == 0.75
-cool = softmax([2.0, 1.0, 0.0], temperature=0.5)
-warm = softmax([2.0, 1.0, 0.0], temperature=1.0)
-assert abs(sum(cool) - 1.0) < 1e-12
-assert cool[0] > warm[0]
-assert abs(cosine([1, 0], [1, 0]) - 1.0) < 1e-12
-print("probabilities:", [round(value, 3) for value in warm])
-print("precision:", precision, "recall:", recall)
-```
+A model has a limit on the content it can work with for a request. You will see this called the **context window**.
 
-Run [the saved example](../labs/module-examples/02_example.py). It prints probabilities approximately 0.665, 0.245, and 0.090 for the three logits, then precision and recall of 0.75. These are calculations over synthetic numbers, not observed model performance.
+In an application, instructions, conversation history, documents, and the generated response can all affect the available budget, depending on the interface.
 
-The positive label means “urgent.” There are three true positives, one false positive, one false negative, and one true negative. Precision asks how many flagged reports really were urgent. Recall asks how many urgent reports were caught. Which error matters more depends on the consequences of missed urgent bugs and unnecessary escalation.
+For our five shop facts, this is not a practical problem. Later, if you supply hundreds of pages or a very long conversation, you will need to decide what information is relevant.
 
-### 6. Multiclass metrics and imbalance
+A larger context window does not guarantee that every supplied detail will be used correctly. You still check whether the answer follows the needed evidence.
 
-For multiple components, calculate precision/recall per class by treating each class as positive in turn. Macro averaging gives equal weight to classes. A support-weighted average gives more influence to common classes. Micro aggregation pools decisions; for ordinary single-label multiclass classification with complete predictions, micro precision/recall equal accuracy.
+### 5. Different wording can be equally correct
 
-State your averaging method. A system that predicts “other” for every report may look good when that category dominates. It still fails the purpose of identifying rare authentication outages.
+Consider these replies to “When do you close on Friday?”
 
-An abstaining classifier adds another decision. Report coverage (fraction receiving a substantive decision) alongside quality among answered cases. A system can improve answered-case accuracy merely by answering less often.
+> A: “We close at 6 p.m. on Friday.”
 
-### 7. Data splits and overfitting in application work
+> B: “Friday opening hours are 10 a.m. to 6 p.m.”
 
-Even if you never train weights, you can overfit by repeatedly editing prompts against the same questions. Development examples influence your decisions. A held-out set supports a more independent estimate only while it remains protected from those decisions.
+Both answer the question correctly.
 
-When failures on the held-out set are inspected and used to improve a prompt, document that transition and reserve fresh independent cases for the next final assessment. Keep related or near-duplicate questions together where appropriate.
+Now consider:
 
-### 8. Guided exercise and interpretation
+> C: “We close at 7 p.m. on Friday.”
 
-Add four negative examples to the numeric classifier exercise and predict all four correctly. Overall accuracy rises while the original missed urgent bug remains. Explain why that change does not improve urgent-case recall.
+C changes the meaning. That is a different kind of difference.
 
-Then multiply both embedding vectors by positive constants. Cosine similarity stays the same because lengths cancel. Replace one vector with a zero vector: the similarity is undefined, so the example raises an error rather than returning a misleading default.
+When comparing responses, pay attention to what they say, not whether their wording exactly matches a preferred sentence.
 
-Finally, create a task where a keyword baseline works very well: component classification using explicit component names. This is a useful control. If a sophisticated model does not beat the baseline on relevant difficult cases, justify the added complexity before adopting it.
+Generation can also vary between repeated requests. Some variation is harmless; a changing factual claim needs investigation.
 
-For tokenizer mechanics, see the [Hugging Face tokenizer chapter](https://huggingface.co/learn/llm-course/chapter6/1). All numeric examples here are original.
+### 6. Models and applications are different comparison targets
 
-## Lab
+An AI chat application may combine a model with its own instructions, search, stored conversation, and other features.
 
-Create 50 synthetic bug reports spanning components and urgency. Write labels before examining model predictions. Compare a simple keyword baseline with a model classifier when available. Report a confusion matrix, per-class precision/recall, and five reviewed errors. Preserve the baseline even if the model is better.
+If two chat tools give different answers, the cause may be more than the underlying models. One might search the web, while another uses only your message.
 
-## Review and answers
+You can still compare their usefulness for a task. Just describe the comparison accurately: “I compared these two applications under these conditions.”
 
-- **Does fluent output establish truth?** No; evaluate claims against evidence or task requirements.
-- **Does semantic similarity mean equivalence?** No; related statements can contradict each other.
-- **Why preserve a simple baseline?** It reveals whether added complexity delivers meaningful benefit.
-- **When should you fine-tune?** After identifying a persistent task gap, establishing evaluation, and obtaining suitable data; it does not repair a missing source document by itself.
+For a controlled model comparison later, you will record which models were used, the supplied information, and the settings. You do not need to learn all those settings now.
 
-## Exit evidence
+### 7. What makes a model suitable?
 
-A metric calculation you can reproduce manually, your classifier comparison, and explanations of tokenization, inference, and leakage.
+Start with a few practical questions:
 
-## Supplementary reading and attribution
+| Question | Why it matters for the bookshop |
+|---|---|
+| Does it answer accurately? | Wrong policies can mislead customers. |
+| Does it follow instructions? | It should use the supplied information and requested format. |
+| Does it handle missing information appropriately? | It should not invent a discount or delivery promise. |
+| Is it clear to read? | A customer should understand the answer. |
+| Is it fast enough? | Waiting a long time can make a simple assistant frustrating. |
+| Is its operating cost acceptable? | A useful application must be affordable to run. |
 
-Study tokenizers, datasets, and Transformers in the [Hugging Face course](https://github.com/huggingface/course). These notes and the bug example are original teaching material; see [attributions](../ATTRIBUTIONS.md).
+There is no need to rank every available model today. Begin with task quality. Cost, speed, and deployment choices become more concrete after you have a working example.
+
+## Walkthrough: compare two fictional candidates
+
+The replies below are invented teaching examples. They are not recorded model results.
+
+Both candidates receive the same five shop facts.
+
+| Question | Candidate A | Candidate B |
+|---|---|---|
+| Are you open on Sunday? | “No, the shop is closed on Sunday.” | “Yes, from 11 a.m.” |
+| Can I return an undamaged book after ten days if I have the receipt? | “Yes, it is within the 14-day return period.” | “Yes, within the 14-day period and with your receipt.” |
+| Do you offer express delivery? | “The information does not describe express delivery.” | “Yes, next-day express delivery is available.” |
+
+How should you read this?
+
+Both candidates handle the return question. A follows the supplied information on Sunday opening and avoids inventing an express service. B makes two unsupported or incorrect claims.
+
+For these particular examples, A gives the more suitable responses.
+
+This does not prove that A would be better on every future question. It is a small, understandable beginning to a comparison.
+
+## Try it yourself
+
+Write an acceptable answer for each question:
+
+1. “What time can I visit on Saturday?”
+2. “Can I return a damaged book after five days?”
+3. “Which payment cards do you accept?”
+
+For each answer, underline the shop fact that supports it. If no fact answers the question, write that down.
+
+The second question needs care: the stated return policy covers undamaged books. It does not establish what exception, if any, applies to damaged books.
+
+If you have access to one AI chat tool, supply the facts and try the three questions. A second tool is optional. You can learn from comparing your own expected answers with one tool's replies.
+
+## Assignment
+
+Make a small comparison sheet:
+
+| Question | Your expected answer or limit | Actual or supplied reply | Your observation |
+|---|---|---|---|
+| | | | |
+
+Use three questions. Record whether you reviewed a live response or one of the lesson's invented examples.
+
+Write a short conclusion:
+
+> For these questions, the assistant handled ___ well. It needs improvement on ___. I would investigate ___ next.
+
+Avoid a general conclusion such as “This model is always accurate.” Your conclusion should fit the evidence you actually collected.
+
+## Knowledge check
+
+1. Do you need to train a model before using it in an application?
+2. Is every token a complete word?
+3. What does adding the shop policy to the request change?
+4. Should two differently worded but correct answers receive the same judgment about factual correctness?
+5. Does a three-question comparison establish which model is best for every task?
+
+<details>
+<summary>Read the answers and explanations</summary>
+
+1. No. You can use an already trained model.
+2. No. Tokens may be parts of words or other units.
+3. It makes that policy available as context for the request. It does not guarantee correct use or permanent learning.
+4. Yes, if both satisfy the factual requirement. You could assess style separately.
+5. No. It provides evidence about those questions under those conditions.
+
+For the practice questions: Saturday hours are 10 a.m. to 6 p.m. The stated return policy only covers undamaged books, so do not invent a damaged-book exception or reject every possible exception as established fact. Accepted payment cards are not specified.
+
+</details>
+
+## What you learned
+
+You can now connect a model's behavior with its training, the information supplied for a request, and the task it is asked to perform.
+
+You are ready for the next lesson when you can compare two replies by meaning and explain why an impressive-sounding answer may still be unsuitable.
+
+## Keep learning
+
+Continue to [Module 03: writing useful prompts](03-prompting-and-development.md).
+
+Microsoft's [Exploring and comparing different LLMs](https://github.com/microsoft/generative-ai-for-beginners/blob/main/02-exploring-and-comparing-different-llms/README.md) offers a broader treatment. Its learning-objectives and scenario-led organization informed this lesson; the worked examples here are original.
+
+The previous mathematical and classifier material is preserved as an [optional technical note](../advanced/02-model-foundations.md). You do not need it to complete this lesson. See [source credits](../ATTRIBUTIONS.md).

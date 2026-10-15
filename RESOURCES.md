@@ -1,5 +1,18 @@
 # Annotated GitHub reading library
 
+## For the current first three lessons
+
+Microsoft's Generative AI for Beginners is the main supplementary course for this phase. Its scenario-led organization inspired the rewrite, while our explanations and exercises are original.
+
+- [Introduction to generative AI](https://github.com/microsoft/generative-ai-for-beginners/blob/main/01-introduction-to-genai/README.md)
+- [Exploring and comparing language models](https://github.com/microsoft/generative-ai-for-beginners/blob/main/02-exploring-and-comparing-different-llms/README.md)
+- [Prompt engineering fundamentals](https://github.com/microsoft/generative-ai-for-beginners/blob/main/04-prompt-engineering-fundamentals/README.md)
+
+Our third lesson introduces prompting; it is not a copy of Microsoft's third lesson. Use the written explanations first. The optional setup and provider-specific notebooks in external courses are not prerequisites for our introductory activities.
+
+<details>
+<summary>Reference library for later technical study</summary>
+
 Use this as a reading sequence, not a list of frameworks to install simultaneously. Read concepts, execute one example, inspect its tests, and deliberately reproduce a failure. Record the revision and dependency versions you used.
 
 ## Core sequence
@@ -53,3 +66,5 @@ For each reading, record:
 - What you would reuse, its license, and required notices.
 
 See [ATTRIBUTIONS.md](ATTRIBUTIONS.md) before importing source material.
+
+</details>

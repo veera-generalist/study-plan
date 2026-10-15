@@ -1,4 +1,4 @@
-"""Verify displayed lesson code matches saved examples and execute assertions."""
+"""Verify optional technical/lesson code matches saved examples and execute assertions."""
 import re
 import os
 import subprocess
@@ -20,10 +20,11 @@ def main():
     fence = chr(96) * 3
     for module in modules:
         prefix = module.name[:2]
+        source = ROOT / "advanced" / module.name if prefix in {"01", "02", "03"} else module
         example = ROOT / "labs/module-examples" / f"{prefix}_example.py"
         blocks = re.findall(
             "^" + fence + r"python\n(.*?)^" + fence + r"\s*$",
-            module.read_text(encoding="utf-8"), flags=re.MULTILINE | re.DOTALL,
+            source.read_text(encoding="utf-8"), flags=re.MULTILINE | re.DOTALL,
         )
         if not example.exists() or len(blocks) != 1:
             failures.append(f"{module.name}: expected one saved/displayed example")
@@ -44,11 +45,11 @@ def main():
         if completed.returncode != 0:
             failures.append(f"{example.name}: {completed.stdout}\n{completed.stderr}")
         else:
-            print(f"PASS {module.name}")
+            print(f"PASS {source.relative_to(ROOT)}")
     if failures:
         print("\n".join(failures))
         return 1
-    print("All 12 displayed examples match their scripts and execute successfully.")
+    print("All 12 technical examples match their displayed source and execute successfully.")
     return 0
 
 

@@ -12,6 +12,10 @@ from urllib.parse import unquote, urlsplit
 ROOT = Path(__file__).resolve().parents[1]
 REQUIRED = ("## Outcomes", "## Detailed tutorial:", "## Lab", "## Review and answers",
             "## Exit evidence", "## Supplementary reading and attribution")
+BEGINNER_REQUIRED = ("## Introduction", "## Learning objectives", "## Scenario:",
+                     "## Lesson", "## Walkthrough:", "## Try it yourself",
+                     "## Assignment", "## Knowledge check", "## What you learned",
+                     "## Keep learning")
 
 
 def outside_fences(text):
@@ -73,7 +77,8 @@ def main():
         errors.append(f"Expected 12 modules, found {len(modules)}")
     for path in modules:
         content = path.read_text(encoding="utf-8")
-        for section in REQUIRED:
+        required = BEGINNER_REQUIRED if path.name[:2] in {"01", "02", "03"} else REQUIRED
+        for section in required:
             if section not in content:
                 errors.append(f"{path.name}: missing {section}")
     if errors:

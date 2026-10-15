@@ -1,178 +1,237 @@
-# Module 01 — Python engineering for AI systems
+# Module 01 — Getting started with generative AI
 
-[Course index](../README.md) · Weeks 1–2 · Prerequisite: basic programming or additional practice time
+[Course home](../README.md) · [Next: understanding language models](02-model-foundations.md)
 
-**Terms to know:** [API](../GLOSSARY.md#api) · [Adapter](../GLOSSARY.md#adapter) · [Schema](../GLOSSARY.md#schema) · [Type hint](../GLOSSARY.md#type-hint) · [Runtime validation](../GLOSSARY.md#runtime-validation) · [JSONL](../GLOSSARY.md#jsonl) · [Exception](../GLOSSARY.md#exception)
+**You need:** curiosity and a place to write notes. No Python, mathematics, model downloads, or paid account is required for this lesson.
 
-## Outcomes
+## Introduction
 
-Build a small data-processing application with clear interfaces, explicit validation, useful errors, and meaningful tests. Transfer your automation experience into reusable application code.
+Imagine a small bookshop that receives the same questions every day: “Are you open on Sunday?”, “Can I return a book?”, and “How long does delivery take?”
 
-## Lesson 1: Boundaries make systems testable
+You want to build an assistant that can answer those questions in everyday language. You also want to know when its answers deserve your trust.
 
-Separate four responsibilities: loading input, validating records, invoking a model adapter, and recording results. If all four live in one function, a provider timeout becomes difficult to distinguish from malformed data. A model adapter lets your tests supply stored responses without network access.
+That small idea introduces the two areas you want to learn:
 
-Define your first boundary as a Python function accepting a list of messages and returning a typed result. Keep provider-specific response parsing inside the adapter. Your application should not depend on a vendor's full response object.
+- **AI engineering:** building an application that uses AI to help someone do something.
+- **AI evaluation:** checking how well that application performs the job you intended.
 
-Use type hints to describe intent, then validate external data at runtime: type hints alone do not reject a string where an integer was expected. JSON parsing only establishes syntactic validity. It does not establish that required fields exist.
+You will explore both through one simple example. There is no need to build the application yet. First, understand what you are asking it to do.
 
-## Lesson 2: Data and error handling
+## Learning objectives
 
-JSONL stores one JSON object per line. It is convenient for datasets because one record can be appended or inspected independently. Give each case a stable ID; line numbers change when cases are reordered.
+By the end, you should be able to:
 
-Distinguish invalid input, application errors, and infrastructure errors. A retry may help a temporary timeout, but repeating a permanently invalid request wastes time. Set timeouts, bound retry counts, and record the original failure. In asynchronous code, bound concurrency to avoid resource exhaustion or rate-limit storms.
+1. Explain generative AI in your own words.
+2. Tell the difference between a model and an application.
+3. Recognize a useful answer and an unsupported answer.
+4. Describe one small AI application you would like to build.
 
-Do not silently skip a bad record. Either reject the run or emit an explicit invalid-record result. Your report's denominator must remain understandable.
+## Scenario: Maple Books
 
-## Worked example
+Maple Books is a fictional shop. We will use these facts in all three lessons:
 
-A record contains `{"id": "B-1", "description": ""}`. Parsing succeeds, but the empty description violates your input contract. Reject it before inference. A record with a real description followed by a model timeout is valid input with an execution error. Those events should have different statuses.
+> **Maple Books information**
+>
+> - The shop is open Monday to Saturday, from 10 a.m. to 6 p.m.
+> - The shop is closed on Sunday.
+> - Customers can return an undamaged book within 14 days of purchase.
+> - A receipt is required for a return.
+> - Delivery within Riverton takes three working days.
 
-## Detailed tutorial: Python from an automation engineer's perspective
+This is all the information available for the exercises. There is no information about discounts, overseas delivery, stock availability, or payment methods.
 
-### 1. Trace the data, then choose the abstraction
+Why keep the information this small? You can check every answer yourself. You can concentrate on learning the ideas without also researching a business.
 
-Imagine an automation suite that receives a bug report, submits it to an AI classifier, and records a component label. There are three different contracts: the report must be usable, the classifier must return a valid result, and the returned label must be correct. The first two can be checked using code. The third needs a reference policy or reviewed label.
+## Lesson
 
-Use a dictionary at the JSON boundary because JSON naturally represents named fields. Convert validated input into a small data object so the rest of the program can rely on established invariants. A list preserves a sequence of records. A dictionary indexed by stable ID supports comparing two runs. A set is useful for allowed enum values or duplicate detection.
+### 1. What does “generative AI” mean?
 
-In Python, assignment binds a name to an object; it does not copy the object. If two variables refer to one list and you append through either variable, both observe the change. This matters when a grader mutates a shared prediction and a later grader sees modified input. Prefer treating case records as immutable during a run. A frozen dataclass prevents assigning its fields; nested mutable objects still require care.
+Generative AI creates content in response to a request. Depending on the system, that content could be text, an image, audio, or code.
 
-### 2. Functions, classes, and interfaces
+For example, you could ask it to:
 
-A function should expose an intention such as parse_bug or classify rather than perform unrelated work hidden behind a generic name. Return a result when the caller needs to make a decision; printing alone makes the result awkward to test or aggregate. Use exceptions for failures that the caller must handle explicitly.
+- Turn a paragraph into a shorter explanation.
+- Draft a friendly reply to a customer.
+- Suggest titles for a story.
+- Explain a piece of code.
 
-A dataclass generates boilerplate initialization and representation for a record. It does not validate arbitrary values automatically. A type hint such as description: str helps people and static tools; passing an integer can still succeed unless runtime code checks it.
+The word **generative** refers to producing content. It does not mean the content is automatically original, accurate, or appropriate.
 
-The adapter in the example below is a callable: a function-like object that receives text and returns a prediction dictionary. Passing it as an argument is dependency injection. A test supplies a fake adapter; a later application supplies a hosted-model adapter. You do not need an inheritance hierarchy to gain that separation.
+Our bookshop assistant will generate text. It will turn a customer's question and the shop's information into an answer.
 
-### 3. A complete runnable example
+### 2. What is a model?
 
-Save and run the linked script, or copy this complete block into a Python file. It uses no third-party packages. The fake classifier is a keyword baseline, not an LLM.
+A **model** is the learned system that processes an input and produces an output.
 
-```python
-"""Module 01: runtime validation and an injectable fake classifier."""
-from dataclasses import dataclass
-from typing import Callable
+You do not write a separate reply for every possible question. A language model has learned patterns from large amounts of language data and can produce responses to different requests.
 
+A **large language model**, usually shortened to **LLM**, is a kind of model used for many language tasks.
 
-@dataclass(frozen=True)
-class Bug:
-    id: str
-    description: str
+For this lesson, remember the practical meaning: it is the part of the system that generates the words. You do not need to understand its internal mathematics yet.
 
+### 3. What is a prompt?
 
-def parse_bug(record: dict) -> Bug:
-    if not isinstance(record, dict):
-        raise ValueError("Bug record must be an object")
-    values = {}
-    for name in ("id", "description"):
-        value = record.get(name)
-        if not isinstance(value, str) or not value.strip():
-            raise ValueError(f"{name} must be nonempty text")
-        values[name] = value.strip()
-    return Bug(**values)
+A **prompt** is the request and information you provide to guide a model.
 
+For our example:
 
-def classify(bug: Bug, adapter: Callable[[str], dict]) -> dict:
-    try:
-        prediction = adapter(bug.description)
-    except TimeoutError:
-        return {"id": bug.id, "status": "application_error", "label": None}
-    label = prediction.get("label") if isinstance(prediction, dict) else None
-    if not isinstance(label, str) or label not in {"authentication", "payments", "other"}:
-        return {"id": bug.id, "status": "invalid_output", "label": None}
-    return {"id": bug.id, "status": "ok", "label": prediction["label"]}
+~~~text
+Use the Maple Books information below to answer this question:
+Are you open on Sunday?
 
-
-def fake_model(text: str) -> dict:
-    return {"label": "authentication" if "login" in text.lower() else "other"}
-
-
-def unavailable_model(text: str) -> dict:
-    raise TimeoutError("simulated provider timeout")
-
-
-bug = parse_bug({"id": "B-1", "description": "Login is unavailable"})
-assert classify(bug, fake_model)["label"] == "authentication"
-assert classify(bug, unavailable_model)["status"] == "application_error"
-assert classify(bug, lambda text: {"label": "invented"})["status"] == "invalid_output"
-assert classify(bug, lambda text: {"label": []})["status"] == "invalid_output"
-try:
-    parse_bug({"id": "B-2", "description": " "})
-except ValueError:
-    print("Blank descriptions are rejected before model execution.")
-else:
-    raise AssertionError("Expected invalid input to be rejected")
-print(classify(bug, fake_model))
-```
-
-Expected behavior: the program first reports that blank descriptions were rejected, then prints a successful authentication classification. Its assertions also check timeout handling and unsupported labels. Run [the saved example](../labs/module-examples/01_example.py) with:
-
-~~~sh
-python3 labs/module-examples/01_example.py
+Information: Maple Books is closed on Sunday.
 ~~~
 
-The parse function strips surrounding whitespace before creating Bug. classify calls an injected dependency and translates a known timeout into a recorded status. It does not catch every Exception; an unexpected programming error should remain visible rather than becoming a misleading normal result. Schema failure is recorded separately from execution failure.
+The question gives the task. The supplied information gives the model something to use when answering.
 
-### 4. Read JSONL without losing evidence
+An appropriate answer would be:
 
-Use a context manager when opening a file so it closes even when processing raises an exception. Specify UTF-8. Enumerate lines starting at one to include useful locations in validation errors. Parse each line, validate it, and check IDs before invoking the model.
+> No. Maple Books is closed on Sunday.
 
-Decide whether blank lines are allowed and document the choice. Do not use an unrestricted “except: continue”; it changes the denominator by dropping difficult records. For a batch run, either fail before execution when the dataset is invalid, or include explicit invalid-input records in a separately reported count.
+This is an illustrative answer written for the lesson. It is not a recorded response from a live model.
 
-Write reports to a different path from the inputs. Recording input hashes helps establish which bytes produced a report. It does not establish that the labels were correct.
+### 4. What is an AI application?
 
-### 5. Timeouts, retries, and concurrency
+The model is one part of an application.
 
-A timeout limits how long one operation can occupy resources. A retry repeats selected failures. A total deadline limits the whole task, including retries. Without a total deadline, three individually reasonable timeouts can create an unacceptable user wait.
+A simple version of our application could work like this:
 
-Only retry when repetition is appropriate. A malformed request usually needs correction. A timed-out read may be retried within a budget. A timed-out write may already have succeeded; it needs idempotency or state inspection before repetition. We build that control in Module 09.
+~~~text
+Customer asks a question
+        ↓
+Application supplies the shop information
+        ↓
+Model produces a draft answer
+        ↓
+Application shows the answer to the customer
+~~~
 
-Concurrency improves throughput when many requests wait on external work, but unrestricted concurrency can exceed service limits. A semaphore can bound outstanding requests. Asynchronous Python does not make CPU-heavy processing automatically parallel. Learn concurrency after the sequential pipeline is correct so timing does not hide basic failures.
+The application decides which information to send, how to present the reply, and what should happen when something goes wrong.
 
-### 6. Guided modification and solution reasoning
+An AI engineer makes those choices and implements them. Using a capable model does not remove the need to design the surrounding software.
 
-Change the fake adapter to return a list instead of a dictionary. The program should produce invalid_output. If it crashes while calling .get, the type check was removed or placed too late. Change the input description to an integer; parse_bug should reject it before the adapter is called.
+Notice that the bookshop information is supplied by the application. We are not assuming the model already knows the shop's current policies.
 
-Next, create an adapter that always returns authentication. The interface tests will pass on authentication input, but classification quality will fail on payments reports. This shows why contract tests and behavioral evaluation must remain separate.
+### 5. What does evaluation mean?
 
-Add a test asserting that the original report dictionary stays unchanged. Then add a duplicate ID to a JSONL file and explain whether rejection happens before any model requests. Your evidence should establish the actual boundary, not just that some exception occurred.
+Evaluation means checking behavior against a clear purpose.
 
-### 7. Common debugging patterns
+For our assistant, useful questions include:
 
-| Symptom | Likely issue | First check |
-|---|---|---|
-| Works manually but fails in a suite | Shared mutable state or configuration | Compare inputs before/after each call |
-| Every error becomes “other” | Overly broad exception handling | Preserve execution and validation statuses |
-| Type hint exists but bad data passes | No runtime validation | Exercise external input boundaries |
-| Intermittent duplicate records | Retries or repeated writes | Inspect operation IDs and stored state |
+- Did it answer the customer's question?
+- Did it use the shop information correctly?
+- Did it add anything the information does not support?
+- Was the reply understandable?
 
-For Python-specific details, read the official [Python tutorial](https://docs.python.org/3/tutorial/), especially data structures, exceptions, classes, and modules. This lesson's code and examples are independently written.
+You can begin this work by reading answers yourself. Automated scoring comes later.
 
-## Lab
+Consider this reply:
 
-1. Run the [offline lab](../labs/offline-evaluation/README.md) and read its loader.
-2. Build a separate bug-report loader accepting ID, description, and component.
-3. Reject duplicate IDs, blank descriptions, and unsupported components.
-4. Add a fake classifier with success, timeout, and malformed-output modes.
-5. Write results without overwriting the source data.
-6. Add tests for the meaningful boundary conditions above.
-7. Document how to reproduce the run from a clean checkout.
+> Yes, we are open on Sunday from 11 a.m. to 4 p.m.
 
-Stretch: replace hand-written validation with a schema library, keeping the observable behavior unchanged.
+It is easy to read. It also contradicts the supplied information. Good writing and a correct answer are different things.
 
-## Review and answers
+### 6. What should happen when information is missing?
 
-- **Why inject a model adapter?** To test application behavior independently of network access and provider implementations.
-- **Does a type hint validate JSON?** No. Validate untrusted input at runtime.
-- **Should every failure be retried?** No. Retry selected transient errors with limits; surface permanent errors.
-- **Why stable IDs?** To compare results across ordering changes and preserve provenance.
+A customer asks:
 
-## Exit evidence
+> Do you deliver outside Riverton?
 
-Submit the loader, tests, a sample result file, and a short explanation of one failure you reproduced. You should be able to explain every assertion.
+The provided information describes delivery within Riverton. It does not answer the question about other places.
 
-## Supplementary reading and attribution
+An appropriate reply is:
 
-The [Microsoft course](https://github.com/microsoft/generative-ai-for-beginners) provides application examples. Use its setup and text-application material after practicing the independent boundaries above. See [source register](../ATTRIBUTIONS.md).
+> The information provided only describes delivery within Riverton. It does not say whether delivery is available elsewhere.
+
+This answer is useful because it makes the limit clear. An invented overseas-delivery promise could create a real problem for the shop.
+
+You will sometimes see the term **hallucination** for generated content that is unsupported or incorrect. The important habit now is to ask, “What information supports this statement?”
+
+### 7. Where do ordinary software rules still help?
+
+Some parts of a product are straightforward rules. Software can check whether a date is Sunday or whether an order number exists.
+
+A language model is useful for handling varied wording or drafting explanations. For instance, “Do you open on Sundays?” and “Can I visit this Sunday?” use different words to ask a similar question.
+
+An application can combine ordinary rules, stored information, and language generation. You do not have to make every part of a product an AI task.
+
+## Walkthrough: check three answers
+
+The customer asks:
+
+> I bought a book ten days ago. Can I return it?
+
+Read the replies below before looking at the explanation.
+
+| Reply | What the assistant says |
+|---|---|
+| A | “Yes, any book can be returned within 30 days.” |
+| B | “A return is allowed within 14 days if the book is undamaged and you have the receipt.” |
+| C | “Yes, and you will receive a cash refund immediately.” |
+
+**Explanation:** B accurately states the conditions in the supplied policy. Ten days is within the return window, but the condition of the book and receipt still matter.
+
+A invents a 30-day period. C skips the conditions and invents details about the refund method and timing.
+
+You have just completed a small evaluation: one question, three possible replies, and a reasoned judgment.
+
+## Try it yourself
+
+Spend about ten minutes on these questions:
+
+1. A customer asks, “What time do you close on Friday?” Write a suitable answer.
+2. A customer asks, “Do students receive a discount?” Write a suitable answer.
+3. Explain why the second question should be handled differently from the first.
+
+You can do this in a notebook without using an AI tool.
+
+If you already have access to an AI chat tool, optionally provide the shop information and ask the same questions. Record the actual replies. Compare them with your own answers rather than assuming they will match this lesson.
+
+## Assignment
+
+Create a short note called **My first AI assistant** containing:
+
+- Who the assistant helps.
+- Three questions it should answer.
+- The information it needs.
+- One thing it should say when it lacks that information.
+- How you would decide whether a reply is useful.
+
+You can continue with Maple Books or choose another small idea, such as a hobby-club assistant or a personal study helper. Keep the task small enough that you can check its answers.
+
+There is no coding requirement for this assignment.
+
+## Knowledge check
+
+Try answering before opening the explanation.
+
+1. Is the model the same thing as the complete bookshop application?
+2. Does a natural-sounding reply establish that its facts are correct?
+3. What should the assistant do when asked about a student discount?
+4. What is one responsibility of an AI engineer, and one responsibility of an evaluator?
+
+<details>
+<summary>Read the answers and explanations</summary>
+
+1. No. The application also supplies information, handles the conversation, and presents or checks the result.
+2. No. Compare factual claims with supporting information.
+3. State that the supplied information does not describe a student discount.
+4. An engineer might decide how the application supplies shop information. An evaluator might check whether answers follow that information. One person can do both kinds of work.
+
+For the practice questions: Friday closing time is 6 p.m. Student discounts are not specified.
+
+</details>
+
+## What you learned
+
+You now have a small, concrete picture of AI engineering and evaluation: build an assistant for a defined purpose, give it suitable information, and check what it says.
+
+You are ready to continue when you can explain the model, the application, and the evaluation without memorizing their definitions.
+
+## Keep learning
+
+Continue to [Module 02: understanding language models](02-model-foundations.md).
+
+For another explanation, read Microsoft's [Introduction to Generative AI and Large Language Models](https://github.com/microsoft/generative-ai-for-beginners/blob/main/01-introduction-to-genai/README.md). Its scenario-based lesson format informed this rewrite. Our bookshop scenario, explanations, exercises, and answers are original.
+
+The earlier Python material is preserved as an [optional technical note](../advanced/01-python-engineering.md). It is not required before Module 02. Source credits are in [ATTRIBUTIONS.md](../ATTRIBUTIONS.md).

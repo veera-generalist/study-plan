@@ -1,6 +1,6 @@
 # Runnable lesson examples
 
-Each module contains a complete Python example explained step by step. The matching scripts in this directory use only the Python standard library. They make no network calls, require no credentials, and use original synthetic data.
+These are optional technical examples. The current beginner Modules 01–03 do not require Python: their earlier code-heavy explanations are preserved in [advanced notes](../../advanced/README.md). Examples 04–12 remain in the later technical draft modules. The matching scripts in this directory use only the Python standard library. They make no network calls, require no credentials, and use original synthetic data.
 
 ## Run
 
@@ -16,7 +16,7 @@ Or run one script:
 python3 labs/module-examples/07_example.py
 ```
 
-The runner checks that each lesson's displayed Python block matches its saved script, then executes the examples with their assertions. Expected behavior:
+The runner checks that the displayed Python block in each technical source matches its saved script, then executes the examples with their assertions. Expected behavior:
 
 | Module | Example | What its assertions establish |
 |---|---|---|

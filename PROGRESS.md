@@ -1,6 +1,8 @@
 # Progress tracker
 
-Status starts as not started. Do not mark completion without an evidence link.
+For the current first three lessons, keep your assistant idea, three-question comparison, and prompt experiment. Explain your observations and attempt the knowledge checks. Running code is not required.
+
+Status starts as not started. Record a note or evidence link when you complete an activity. The later technical milestones are for future study.
 
 Useful intermediate statuses are concept example complete, project in progress, and live evidence pending. An offline example passing does not complete a live-model or portfolio assignment; see the [course guide](COURSE_GUIDE.md).
 

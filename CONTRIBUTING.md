@@ -1,6 +1,6 @@
 # Contributing to this study plan
 
-Keep teaching material practical, independently worded, and appropriate for an experienced QA engineer. Each module should include outcomes, a detailed tutorial, a complete runnable Python example with expected behavior, guided practice with answer reasoning, a lab, review answers, completion evidence, and sources. Topic lists alone are not a lesson.
+Write for people learning AI for the first time. For Modules 01–03, use an introduction, learning objectives, a scenario, explained concepts, a worked example, guided practice, an assignment, a knowledge check with answer explanations, and further reading. Define unfamiliar words where they appear. Use examples that suit the idea; do not force comparisons to the learner's profession. Python code is optional at this introductory stage. Modules 04–12 retain their earlier technical structure until a later rewrite.
 
 For an edit:
 

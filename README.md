@@ -1,64 +1,67 @@
-# From Senior QA to AI Engineering and Evaluation
+# Getting started with AI engineering and evaluation
 
-A practical, evaluation-first course for a QA engineer with 15+ years of experience transitioning into applied AI engineering and AI evaluation engineering.
+Learn how an AI application works, how to ask it for useful results, and how to check its answers.
 
-**Course format:** 12 modules across approximately 24 weeks at 8–10 hours per week. This is a learning estimate, not a job-placement promise. Each module includes a detailed tutorial, a complete runnable Python example, expected behavior, guided practice with answer reasoning, and a larger lab assignment. External repositories provide supplementary reading and implementation examples.
+**Our current focus is the first three lessons.** They are written for someone new to AI, with explanations, worked examples, guided practice, and assignments. Python remains the language for later implementation work; you do not need it to begin these lessons.
 
 ## Start here
 
-Keep the [beginner-friendly glossary](GLOSSARY.md) open while studying. Begin with its twelve starter terms, then use each module's **Terms to know** links as unfamiliar words appear. Every glossary entry includes a QA example.
+| Lesson | What you will learn | What you will make |
+|---|---|---|
+| [01 — Getting started with generative AI](modules/01-python-engineering.md) | What a model does, what an application adds, and why answers need checking | A small assistant idea |
+| [02 — Understanding and comparing language models](modules/02-model-foundations.md) | Why responses differ and how to compare them for a task | A three-question comparison |
+| [03 — Writing useful prompts](modules/03-prompting-and-development.md) | How to give clear instructions, relevant facts, and a useful answer format | A prompt and one documented improvement |
 
-1. Read the [roadmap](ROADMAP.md) and [setup guide](SETUP.md).
-   Use the [course guide](COURSE_GUIDE.md) to distinguish offline examples, live exercises, and portfolio evidence.
-2. Complete [Module 01](modules/01-python-engineering.md).
-3. Run the [module examples](labs/module-examples/README.md), then the [offline evaluation lab](labs/offline-evaluation/README.md).
-4. Update your [progress tracker](PROGRESS.md) with evidence after each module.
-5. Keep a [learning log](templates/learning-log.md).
+Start with Lesson 01. Read the example, try the activity, and answer the knowledge check before opening its explanations. You can work entirely from the supplied examples or optionally try an AI chat tool you already have.
 
-## Course contents
+## How these lessons are taught
 
-| Module | Weeks | Topic | Evidence you produce |
-|---|---|---|---|
-| [01](modules/01-python-engineering.md) | 1–2 | Python engineering | Validated data pipeline and tests |
-| [02](modules/02-model-foundations.md) | 3–4 | Models, tokens, embeddings, ML basics | Classification baseline and error analysis |
-| [03](modules/03-prompting-and-development.md) | 5–6 | Prompting, structured output, AI-assisted coding | Controlled prompt comparison |
-| [04](modules/04-datasets-and-oracles.md) | 7–8 | Evaluation datasets and labeling | Dataset card and labeling guidelines |
-| [05](modules/05-evaluation-harnesses.md) | 9–10 | Metrics, graders, evaluation runners | Reproducible evaluation report |
-| [06](modules/06-judges-and-human-review.md) | 11–12 | LLM judges and human review | Judge validation report |
-| [07](modules/07-rag-engineering.md) | 13–14 | Retrieval-augmented generation | QA knowledge assistant |
-| [08](modules/08-rag-evaluation-and-statistics.md) | 15–16 | RAG metrics and statistical comparisons | Paired experiment with uncertainty |
-| [09](modules/09-tools-and-agents.md) | 17–18 | Tools, workflows, agents | Bounded sandbox workflow |
-| [10](modules/10-agent-evaluation-and-security.md) | 19–20 | Agent evaluation and adversarial testing | State-based checks and security findings |
-| [11](modules/11-observability-and-delivery.md) | 21–22 | Traces, CI, production feedback | Release evaluation pipeline |
-| [12](modules/12-optimization-and-career.md) | 23–24 | Optimization and career evidence | Capstone report and portfolio |
+We use one fictional bookshop across the three lessons. Each lesson introduces the ideas it needs in everyday language before asking you to use them.
 
-## Supporting material
+The organization is inspired by Microsoft's [Generative AI for Beginners](https://github.com/microsoft/generative-ai-for-beginners): a scenario, learning objectives, explanations, examples, an assignment, and a knowledge check. The writing, bookshop scenario, exercises, and answer explanations in this repository are original. See [attributions](ATTRIBUTIONS.md).
 
-- [Twelve runnable lesson examples and verification command](labs/module-examples/README.md)
-- [Optional first live-model request and adapter tests](labs/live-model/README.md)
-- [How to study, review labels solo, and manage dataset splits](COURSE_GUIDE.md)
-- [Dated reference snapshots and freshness findings](references/README.md)
-- [Pre-push review findings and verification limits](REVIEW.md)
-- [Annotated GitHub reading library](RESOURCES.md)
-- [Attributions and reuse policy](ATTRIBUTIONS.md)
-- [Beginner-friendly glossary: definitions, QA examples, and commonly confused terms](GLOSSARY.md)
-- [Portfolio project briefs](projects/README.md)
-- [Evaluation report template](templates/evaluation-report.md)
-- [Dataset card template](templates/dataset-card.md)
-- [Labeling guidelines template](templates/labeling-guidelines.md)
-- [Experiment record template](templates/experiment-record.md)
+Read the [short course guide](COURSE_GUIDE.md) if you want help getting started. Look up a word in the [glossary](GLOSSARY.md) when you need it; you do not need to study the glossary first.
+
+## What to do after Lesson 03
+
+Pause and review your assistant idea, comparison sheet, and prompt experiment. These show whether the basic ideas are becoming clear.
+
+The remaining Modules 04–12 retain their earlier technical draft. They have not yet been rewritten in this beginner format. The [roadmap](ROADMAP.md) records the wider direction, but those chapters are not a prerequisite for finishing the current three lessons.
+
+<details>
+<summary>Optional technical notes and coding material</summary>
+
+The earlier first-three chapters are preserved for later use:
+
+- [Python engineering](advanced/01-python-engineering.md)
+- [Model mathematics and classification](advanced/02-model-foundations.md)
+- [Prompt comparisons in Python](advanced/03-prompting-and-development.md)
+
+Other optional material:
+
+- [Python setup and later exercises](SETUP.md)
+- [Saved technical examples](labs/module-examples/README.md)
+- [Offline evaluation lab](labs/offline-evaluation/README.md)
+- [Local-model adapter](labs/live-model/README.md)
+- [Project briefs](projects/README.md)
+- [Reference library](RESOURCES.md)
+- [Learning log template](templates/learning-log.md)
+- [Progress tracker](PROGRESS.md)
+
+These programs and project assignments go beyond the current introductory lessons. You can return to them after the concepts feel familiar.
+
+</details>
+
+<details>
+<summary>Repository maintenance and verification</summary>
+
+Run `python3 scripts/validate.py` for the offline repository checks. This is for verifying the material and examples; it is not a learner prerequisite.
+
+- [Validation scope](VALIDATION.md)
+- [Earlier technical review](REVIEW.md)
+- [Dated reference snapshots](references/README.md)
 - [Contribution guidance](CONTRIBUTING.md)
 
-## Learning principles
+Core sources were reviewed on 2026-10-15. The three Microsoft lesson destinations used for this rewrite were also reviewed on that date. External examples and real-model inference have not been executed during validation.
 
-Run `python3 scripts/validate.py` for the full offline checks; see [VALIDATION.md](VALIDATION.md) for exactly what is verified.
-
-Build a small system, state what good behavior means, collect representative cases, evaluate it, inspect failures, and improve one thing at a time. Use deterministic checks for exact requirements and calibrated human/model judgments for semantic requirements. Preserve the evidence behind every quality claim.
-
-Your QA expertise transfers directly to failure analysis, test design, automation, and release decisions. Add Python, model behavior, data discipline, and statistical reasoning. Practice building the systems you evaluate.
-
-## Scope and provenance
-
-This is an independently written study course assembled with AI assistance for this repository. It is not an official course from any referenced organization, and no endorsement is implied. Upstream courses, source code, notebooks, and figures are linked rather than mirrored. Read [ATTRIBUTIONS.md](ATTRIBUTIONS.md) before importing outside material.
-
-Research links were checked on 2026-10-15; see the reference snapshots for scope. External APIs, model availability, and repository locations can change. The twelve lesson examples and offline evaluator require no model service. The optional live-model adapter calls a local model service; its simulated-response tests require no network. Real-model inference and full portfolio projects were not executed during course validation.
+</details>
