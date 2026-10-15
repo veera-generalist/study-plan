@@ -6,6 +6,8 @@ A practical, evaluation-first course for a QA engineer with 15+ years of experie
 
 ## Start here
 
+Keep the [beginner-friendly glossary](GLOSSARY.md) open while studying. Begin with its twelve starter terms, then use each module's **Terms to know** links as unfamiliar words appear. Every glossary entry includes a QA example.
+
 1. Read the [roadmap](ROADMAP.md) and [setup guide](SETUP.md).
 2. Complete [Module 01](modules/01-python-engineering.md).
 3. Run the [module examples](labs/module-examples/README.md), then the [offline evaluation lab](labs/offline-evaluation/README.md).
@@ -34,7 +36,7 @@ A practical, evaluation-first course for a QA engineer with 15+ years of experie
 - [Twelve runnable lesson examples and verification command](labs/module-examples/README.md)
 - [Annotated GitHub reading library](RESOURCES.md)
 - [Attributions and reuse policy](ATTRIBUTIONS.md)
-- [Glossary](GLOSSARY.md)
+- [Beginner-friendly glossary: definitions, QA examples, and commonly confused terms](GLOSSARY.md)
 - [Portfolio project briefs](projects/README.md)
 - [Evaluation report template](templates/evaluation-report.md)
 - [Dataset card template](templates/dataset-card.md)

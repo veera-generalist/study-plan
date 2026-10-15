@@ -2,6 +2,8 @@
 
 [Course index](../README.md) · Weeks 17–18 · Prerequisites: Modules 01–08
 
+**Terms to know:** [Agent](../GLOSSARY.md#agent) · [Workflow](../GLOSSARY.md#workflow) · [Tool and function calling](../GLOSSARY.md#tool-and-function-calling) · [State](../GLOSSARY.md#state) · [Idempotency](../GLOSSARY.md#idempotency) · [MCP](../GLOSSARY.md#mcp)
+
 ## Outcomes
 
 Build an explicit, bounded workflow and understand where model-driven decisions add value.

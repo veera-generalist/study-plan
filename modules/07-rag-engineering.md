@@ -2,6 +2,8 @@
 
 [Course index](../README.md) · Weeks 13–14 · Prerequisites: Modules 01–06
 
+**Terms to know:** [RAG](../GLOSSARY.md#rag) · [Chunk](../GLOSSARY.md#chunk) · [Retrieval](../GLOSSARY.md#retrieval) · [Keyword and semantic search](../GLOSSARY.md#keyword-and-semantic-search) · [Citation](../GLOSSARY.md#citation)
+
 ## Outcomes
 
 Build a small assistant that retrieves evidence, answers with source references, and handles missing information.

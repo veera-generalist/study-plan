@@ -2,6 +2,8 @@
 
 [Course index](../README.md) · Weeks 15–16 · Prerequisites: Modules 04–07
 
+**Terms to know:** [Recall at k](../GLOSSARY.md#recall-at-k) · [MRR](../GLOSSARY.md#mrr) · [Paired comparison](../GLOSSARY.md#paired-comparison) · [Bootstrap](../GLOSSARY.md#bootstrap) · [Confidence interval](../GLOSSARY.md#confidence-interval)
+
 ## Outcomes
 
 Separate retrieval from answer quality and compare configurations without overstating a small score difference.

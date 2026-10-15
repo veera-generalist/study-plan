@@ -2,6 +2,8 @@
 
 [Course index](../README.md) · Weeks 7–8 · Prerequisites: Modules 01–03
 
+**Terms to know:** [Dataset](../GLOSSARY.md#dataset) · [Oracle](../GLOSSARY.md#oracle) · [Label](../GLOSSARY.md#label) · [Annotation and adjudication](../GLOSSARY.md#annotation-and-adjudication) · [Held-out set](../GLOSSARY.md#held-out-set) · [Provenance and dataset card](../GLOSSARY.md#provenance-and-dataset-card)
+
 ## Outcomes
 
 Create an evaluation dataset whose coverage, labels, provenance, and limitations you can defend.

@@ -2,6 +2,8 @@
 
 [Course index](../README.md) · Weeks 5–6 · Prerequisites: Modules 01–02
 
+**Terms to know:** [Prompt](../GLOSSARY.md#prompt) · [Zero-shot and few-shot](../GLOSSARY.md#zero-shot-and-few-shot) · [Structured output](../GLOSSARY.md#structured-output) · [Abstention](../GLOSSARY.md#abstention)
+
 ## Outcomes
 
 Write explicit task contracts, compare prompt versions fairly, and review AI-generated code with independent checks.

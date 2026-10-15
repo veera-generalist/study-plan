@@ -2,6 +2,8 @@
 
 [Course index](../README.md) · Weeks 21–22 · Prerequisites: Modules 05–10
 
+**Terms to know:** [Observability](../GLOSSARY.md#observability) · [Trace](../GLOSSARY.md#trace) · [Span](../GLOSSARY.md#span) · [p95 latency](../GLOSSARY.md#p95-latency) · [CI](../GLOSSARY.md#ci) · [Release gate](../GLOSSARY.md#release-gate)
+
 ## Outcomes
 
 Diagnose a failure from traces, create evaluation tiers, and write an evidence-backed release recommendation.

@@ -2,6 +2,8 @@
 
 [Course index](../README.md) · Weeks 3–4 · Prerequisite: Module 01
 
+**Terms to know:** [LLM](../GLOSSARY.md#llm) · [Token](../GLOSSARY.md#token) · [Context window](../GLOSSARY.md#context-window) · [Embedding](../GLOSSARY.md#embedding) · [Inference](../GLOSSARY.md#inference) · [Temperature](../GLOSSARY.md#temperature)
+
 ## Outcomes
 
 Explain model behavior at an engineering level and calculate classification metrics. You do not need to train a foundation model to build a reliable AI application.

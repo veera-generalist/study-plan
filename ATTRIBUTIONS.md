@@ -33,6 +33,10 @@ Research/reference review date: **2026-10-15**. This records a documentation rev
 | [Tokenizer chapter — Hugging Face course contributors](https://huggingface.co/learn/llm-course/chapter6/1) | Tokenization reference; Module 02 | Documentation's applicable license/terms |
 | [statistics module — Python Software Foundation and contributors](https://docs.python.org/3/library/statistics.html) | Standard-library reference for numeric examples; Module 08 | [Python documentation license](https://docs.python.org/3/license.html) |
 | [Trace concepts — OpenTelemetry authors and contributors](https://opentelemetry.io/docs/concepts/signals/traces/) | Trace/span terminology; Module 11 | [OpenTelemetry website source and license](https://github.com/open-telemetry/opentelemetry.io) |
+| [Python Glossary — Python Software Foundation and contributors](https://docs.python.org/3/glossary.html) | Further reading for software terminology in the beginner glossary | [Python documentation license](https://docs.python.org/3/license.html) |
+| [Machine Learning Glossary — Google](https://developers.google.com/machine-learning/glossary) | Further reading for ML terminology in the beginner glossary | Publisher's applicable documentation license/terms |
+| [MCP introduction — Model Context Protocol contributors](https://modelcontextprotocol.io/docs/getting-started/intro) | Protocol terminology in the beginner glossary | Publisher's applicable documentation license/terms |
+| [Observability primer — OpenTelemetry authors and contributors](https://opentelemetry.io/docs/concepts/observability-primer/) | Further reading for operations terminology in the beginner glossary | [OpenTelemetry website source and license](https://github.com/open-telemetry/opentelemetry.io) |
 
 Credit reflects the project or publisher, not an exhaustive list of individual authors. Follow upstream contributor and citation information for formal publications.
 

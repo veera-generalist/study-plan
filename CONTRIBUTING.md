@@ -4,6 +4,8 @@ Keep teaching material practical, independently worded, and appropriate for an e
 
 For an edit:
 
+Explain new technical words when first introduced and add a plain-language glossary entry with a QA example. Keep each module's **Terms to know** links useful for someone new to AI.
+
 1. Explain the learning problem or factual correction.
 2. Update the lesson, example, and answer guidance together.
 3. Check local links with `python3 scripts/check_course.py`.

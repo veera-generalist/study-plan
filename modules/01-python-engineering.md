@@ -2,6 +2,8 @@
 
 [Course index](../README.md) · Weeks 1–2 · Prerequisite: basic programming or additional practice time
 
+**Terms to know:** [API](../GLOSSARY.md#api) · [Adapter](../GLOSSARY.md#adapter) · [Schema](../GLOSSARY.md#schema) · [Type hint](../GLOSSARY.md#type-hint) · [Runtime validation](../GLOSSARY.md#runtime-validation) · [JSONL](../GLOSSARY.md#jsonl) · [Exception](../GLOSSARY.md#exception)
+
 ## Outcomes
 
 Build a small data-processing application with clear interfaces, explicit validation, useful errors, and meaningful tests. Transfer your automation experience into reusable application code.

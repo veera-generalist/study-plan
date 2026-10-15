@@ -2,6 +2,8 @@
 
 [Course index](../README.md) · Weeks 9–10 · Prerequisite: Module 04
 
+**Terms to know:** [Evaluation harness](../GLOSSARY.md#evaluation-harness) · [Grader](../GLOSSARY.md#grader) · [Deterministic grader](../GLOSSARY.md#deterministic-grader) · [Semantic grader](../GLOSSARY.md#semantic-grader) · [Coverage](../GLOSSARY.md#coverage) · [Metric](../GLOSSARY.md#metric)
+
 ## Outcomes
 
 Run reproducible evaluations that preserve raw evidence and distinguish model failures from invalid measurements.

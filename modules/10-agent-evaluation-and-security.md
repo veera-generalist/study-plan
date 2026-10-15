@@ -2,6 +2,8 @@
 
 [Course index](../README.md) · Weeks 19–20 · Prerequisite: Module 09
 
+**Terms to know:** [Prompt injection](../GLOSSARY.md#prompt-injection) · [Trust boundary](../GLOSSARY.md#trust-boundary) · [Red teaming](../GLOSSARY.md#red-teaming) · [Pass at k](../GLOSSARY.md#pass-at-k) · [Pass all k](../GLOSSARY.md#pass-all-k) · [Authentication and authorization](../GLOSSARY.md#authentication-and-authorization)
+
 ## Outcomes
 
 Evaluate task outcomes and execution constraints, and investigate adversarial failures in your own sandbox application.

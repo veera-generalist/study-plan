@@ -2,6 +2,8 @@
 
 [Course index](../README.md) · Weeks 11–12 · Prerequisites: Modules 04–05
 
+**Terms to know:** [LLM-as-judge](../GLOSSARY.md#llm-as-judge) · [Rubric](../GLOSSARY.md#rubric) · [False positive and false negative](../GLOSSARY.md#false-positive-and-false-negative) · [Calibration](../GLOSSARY.md#calibration)
+
 ## Outcomes
 
 Design anchored rubrics and validate automated grading against independently reviewed examples.

@@ -2,6 +2,8 @@
 
 [Course index](../README.md) · Weeks 23–24 · Prerequisites: Modules 01–11
 
+**Terms to know:** [Baseline](../GLOSSARY.md#baseline) · [Overfitting](../GLOSSARY.md#overfitting) · [Tradeoff frontier](../GLOSSARY.md#tradeoff-frontier) · [Fine-tuning](../GLOSSARY.md#fine-tuning) · [Practical significance](../GLOSSARY.md#practical-significance) · [Cost per successful task](../GLOSSARY.md#cost-per-successful-task)
+
 ## Outcomes
 
 Improve one component with controlled evidence and present your engineering judgment clearly.
