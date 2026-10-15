@@ -1,6 +1,6 @@
 # Optional bridge: call a real local model
 
-Use this after Module 03's fake/stored-output examples. It demonstrates the missing step between a fake adapter and live inference: constructing a request, calling a local model service, validating the actual response, and preserving the evidence.
+Use this optional coding lab when you understand the introductory lessons and are ready to work with Python and a local model service. It demonstrates constructing a request, validating the actual response, and preserving the evidence. The earlier stored-output Python comparison is now an [optional technical note](../../advanced/03-prompting-and-development.md); the main Lesson 03 does not require this setup.
 
 ## What is and is not verified
 

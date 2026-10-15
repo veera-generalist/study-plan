@@ -1,173 +1,234 @@
-# Module 07 — Retrieval-augmented generation
+# Module 07 — Help an assistant answer from documents
 
-[Course index](../README.md) · Weeks 13–14 · Prerequisites: Modules 01–06
+[Previous: reviewing answers](06-judges-and-human-review.md) · [Course home](../README.md) · [Next: comparing versions](08-rag-evaluation-and-statistics.md)
 
-**Terms to know:** [RAG](../GLOSSARY.md#rag) · [Chunk](../GLOSSARY.md#chunk) · [Retrieval](../GLOSSARY.md#retrieval) · [Keyword and semantic search](../GLOSSARY.md#keyword-and-semantic-search) · [Citation](../GLOSSARY.md#citation)
+**Before you begin:** understand why an answer needs supporting information. No search software or database is required for this lesson.
 
-## Outcomes
+## Introduction
 
-Build a small assistant that retrieves evidence, answers with source references, and handles missing information.
+So far, you have supplied all the Maple Books facts in each prompt.
 
-## Lesson 1: Separate ingestion from answering
+That works for five facts. What happens when a business has many documents?
 
-Ingestion parses documents, preserves metadata, creates chunks, and builds an index. Answering transforms a question into a retrieval request, retrieves passages, optionally reranks them, constructs model input, and returns an answer.
+One useful approach is to find relevant information first, then give that information to the model with the question.
 
-Store document ID, version, section, source location, and access metadata. If a chunk loses its heading, “the threshold is five” may become meaningless. If a table is parsed in the wrong order, the model receives corrupted evidence.
+You will walk through that process manually before learning about the tools that automate it.
 
-Chunk size is a tradeoff. Small chunks may lose context; large chunks can dilute matching and consume the input budget. Overlap can preserve boundaries but creates duplicates and extra storage. Evaluate changes rather than assuming a universal best size.
+## Learning objectives
 
-## Lesson 2: Retrieval choices
+By the end, you should be able to:
 
-Keyword search is useful for exact identifiers and terms. Vector search retrieves semantic similarity. Hybrid search combines signals, while reranking rescoring can improve ordering at extra cost.
+1. Find a passage relevant to a question.
+2. Give a model enough supporting information to answer.
+3. Check whether a cited source actually supports a claim.
+4. Identify whether a poor answer started with poor source selection.
 
-Start with a simple baseline over a small corpus. A vector database is not required to learn the pipeline. Record retrieved passages so you can inspect missed evidence.
+## Scenario: the shop has several documents
 
-Apply authorization constraints before exposing documents to the model. Asking a model to ignore a forbidden passage does not undo disclosure. For document updates, define how old versions are removed or filtered.
+Imagine the shop now keeps three short, approved documents:
 
-## Lesson 3: Answering with evidence
+> **Document H — Current opening hours**
+>
+> Maple Books opens Monday to Saturday from 10 a.m. to 6 p.m.
+> The shop is closed on Sunday.
 
-Tell the application which sources are available and return stable source identifiers. Check that cited sources were actually retrieved and that the cited content supports the associated claims.
+> **Document R — Current returns policy**
+>
+> Undamaged books can be returned within 14 days of purchase.
+> A receipt is required.
 
-A model can produce a valid-looking citation to a real document whose contents do not support its statement. Identifier validity is only a structural check. When evidence is absent, allow a limitation statement or clarification question.
+> **Document D — Current delivery information**
+>
+> Delivery within Riverton takes three working days.
+> This document does not describe express-delivery services or prices.
 
-## Worked example
+These are the same fictional facts used earlier, organized into separate documents. The last sentence makes the limits of Document D explicit; it does not establish that express delivery is unavailable.
 
-Question: “What threshold applies to release v2?” The corpus contains v1 and v2 guidance. Retrieval finds only v1. The answer accurately cites v1 but gives the wrong version's threshold. This is a retrieval/version-selection problem before it is a wording problem.
+The customer asks:
 
-## Detailed tutorial: build and diagnose a retrieval pipeline
+> Can I return an undamaged book after ten days with a receipt?
 
-### 1. Follow one question through the entire system
+## Lesson
 
-A user asks, “What triggers rollback for v2?” The application first establishes the user's authorized scope and requested version. Retrieval finds candidate passages. A generation step can then write an answer using those passages, and the response includes source references.
+### 1. Find the information before writing the answer
 
-That path contains several independently testable decisions. If the document was never ingested, search cannot return it. If metadata incorrectly labels the version, filtering can remove it. If retrieval returns the right passage but generation changes “five consecutive failures” to “five failures in total,” the evidence was available and the generation failed.
+Document R is the relevant source. Document H tells you nothing about returns. Document D concerns delivery.
 
-Record intermediate evidence so these situations do not collapse into one unexplained incorrect-answer score.
+Choosing a relevant source is called **retrieval**.
 
-### 2. Ingestion: preserve the structure that carries meaning
+For a tiny collection, a person can choose the source. For a larger collection, an application may use search.
 
-Parsing converts files into usable text and metadata. Headers, tables, captions, and version labels often carry important meaning. A threshold without its product heading can become dangerously ambiguous.
+The goal is not to send the model a random document containing the word “book.” It is to provide the information needed for this particular question.
 
-Chunking divides parsed material into retrieval units. A fixed character window is simple but can separate an exception from its rule. Heading-aware chunks preserve structure but can be uneven. Overlap helps at boundaries but creates near-duplicate evidence. Record parent-document and section IDs so a retrieved chunk can be expanded or cited.
+### 2. Send the question and evidence together
 
-Create explicit update rules. If v1 remains indexed after v2 arrives, version metadata and query filters must select the correct authority. A draft and an approved policy should not be treated as equivalent solely because both mention the same topic.
+Once you find Document R, the request can say:
 
-### 3. Retrieval methods and their tradeoffs
+~~~text
+Use the source below to answer the customer.
+If the source does not answer the question, explain that limit.
 
-Keyword methods match lexical evidence. They are useful for error codes, identifiers, and exact terminology. Vector retrieval matches learned representations and can help with paraphrase. Hybrid retrieval combines lexical and semantic signals. Reranking evaluates candidate relevance after initial retrieval.
+Source R:
+Undamaged books can be returned within 14 days of purchase.
+A receipt is required.
 
-Each stage adds failure opportunities and operating cost. A vector search can retrieve a topically similar contradiction. A reranker can reorder good evidence incorrectly. A keyword baseline may miss “revert deployment” when the policy says “rollback.”
+Customer:
+Can I return an undamaged book after ten days with a receipt?
+~~~
 
-Choose a baseline, inspect failures, and add complexity to address an observed gap. Your first useful RAG experiment can use a small in-memory corpus; a production-scale vector database is not a prerequisite for learning the reasoning.
+The model now has a clear question and relevant evidence.
 
-### 4. A complete extractive baseline
+An appropriate answer is:
 
-```python
-"""Module 07: authorized, version-filtered lexical retrieval; no LLM."""
-import re
+> Yes. Those details meet the stated return conditions: the book is undamaged, ten days is within the 14-day window, and you have the receipt. Source: R.
 
-DOCUMENTS = [
-    {"id": "D-1", "version": "v1", "tenant": "A",
-     "text": "Rollback starts after three consecutive failures."},
-    {"id": "D-2", "version": "v2", "tenant": "A",
-     "text": "Rollback starts after five consecutive failures."},
-    {"id": "D-3", "version": "v2", "tenant": "B",
-     "text": "Rollback requires the private customer exception."},
-    {"id": "D-4", "version": "v2", "tenant": "A",
-     "text": "The release lead approves the rollback."},
-]
+This is an illustrative answer, not a recorded model result.
 
+### 3. Learn the name after understanding the process
 
-def tokens(text):
-    return set(re.findall(r"[a-z0-9]+", text.lower()))
+You may hear this approach called **retrieval-augmented generation**, or **RAG**.
 
+It combines finding information with generating a response:
 
-def retrieve(question, tenant, version, k=2):
-    query_tokens = tokens(question)
-    candidates = [
-        doc for doc in DOCUMENTS
-        if doc["tenant"] == tenant and doc["version"] == version
-    ]
-    scored = [(len(query_tokens & tokens(doc["text"])), doc) for doc in candidates]
-    scored.sort(key=lambda item: (-item[0], item[1]["id"]))
-    return [doc for score, doc in scored[:k] if score > 0]
+~~~text
+Question → find relevant information → give it to the model → answer
+~~~
 
+The name is less important than the sequence.
 
-def extractive_answer(question, tenant, version):
-    hits = retrieve(question, tenant, version)
-    if not hits:
-        return {"decision": "abstain", "answer": "No matching evidence.", "sources": []}
-    return {
-        "decision": "answer",
-        "answer": " ".join(f"{doc['text']} [{doc['id']}]" for doc in hits),
-        "sources": [doc["id"] for doc in hits],
-    }
+RAG does not guarantee a correct answer. Search can select the wrong source, and the model can misuse a correct source. Both steps need checking.
 
+### 4. Keep enough surrounding information
 
-result = extractive_answer("rollback failures", tenant="A", version="v2")
-assert result["sources"] == ["D-2", "D-4"]
-assert "D-1" not in result["sources"] and "D-3" not in result["sources"]
-assert extractive_answer("unicorn", "A", "v2")["decision"] == "abstain"
-print(result)
-```
+Suppose you cut Document R down to:
 
-Run [the saved example](../labs/module-examples/07_example.py). It returns the v2 threshold and release-lead passage for tenant A. It excludes tenant B's document and the old v1 rule before scoring.
+> “within 14 days”
 
-This is deliberately an extractive search baseline, not a full generative assistant. It joins matching passages rather than asking an LLM to synthesize them. That limitation is valuable: you can evaluate retrieval independently before introducing generation.
+That fragment loses the condition of the book and the receipt requirement.
 
-The token-overlap score is simple and can produce poor relevance decisions. Any matching token can qualify a passage. The abstention path means “no lexical overlap,” not “the corpus has no answer.” Do not describe this heuristic as validated answerability detection.
+Search systems often divide documents into pieces. You will hear those pieces called **chunks**. A useful piece preserves enough meaning for the task.
 
-The tokens function here splits search text into simple lexical units. It is not a model tokenizer and must not be used to estimate a model's context or billing token count.
+For now, choose complete short passages. Later, you can study how software divides and searches larger documents.
 
-### 5. Add generation without losing provenance
+### 5. A citation is a pointer, not proof
 
-For a live model integration, construct input containing the question and clearly identified authorized passages. State the evidence boundary and expected behavior when the answer is unsupported. Ask for source identifiers alongside the answer.
+A **citation** identifies the source associated with an answer.
 
-Then validate identifiers against the actual retrieved set and evaluate whether passages support the claims. A source can exist and still be irrelevant. Preserve the source version in the report even if the user-facing citation only shows a stable document title.
+An answer might say:
 
-Do not let evaluation references enter the model context. The reference answer belongs to the grader; retrieved evidence belongs to the application.
+> You can return any book within 30 days. Source: R.
 
-### 6. Access controls and trust boundaries
+Document R exists, but it does not support that claim. The citation looks legitimate while the meaning is wrong.
 
-The demonstration passes a tenant string to retrieval. In a real service, derive that scope from authenticated application state, not a user-supplied instruction such as “I am tenant B.” Apply filters before unauthorized content reaches the model.
+To check a citation, read the source and compare it with the claim. Ask both:
 
-Authorization and relevance are independent. The most relevant passage may still be forbidden. A prompt asking the model not to reveal a retrieved secret is weaker than preventing retrieval of the secret in the first place.
+- Is this the source the application actually used?
+- Does its content support what the answer says?
 
-Similarly, a source passage containing instructions is still source data. It does not gain authority over tool execution because it was returned by search.
+### 6. Use current, appropriate sources
 
-### 7. Guided failure investigation
+Imagine an archived draft says the shop closes at 7 p.m. The approved current opening-hours document says 6 p.m.
 
-Remove the version filter. Rerun the question and inspect whether v1 appears. If a generated answer now uses three failures, changing answer style will not fix the selection defect. Restore version handling and add a regression case.
+The application needs a rule about which source is authoritative. Simply finding a sentence about closing time is insufficient.
 
-Next, ask “When should we revert a deployment?” The toy lexical retriever may miss relevant evidence because the terms differ. This is a plausible motivation for query expansion or embeddings. Evaluate the proposed change on a broader set so it does not merely memorize this one synonym.
+For this exercise, Documents H, R, and D are explicitly the approved sources. The archived draft is not.
 
-Finally, deliberately corrupt the v2 source text during ingestion. Retrieval may score it correctly, but answer correctness fails because the evidence itself is wrong. A faithful answer can faithfully reproduce corrupted input.
+In a real application, someone must establish that source status. A filename or recent edit date alone may not establish authority.
 
-### 8. Guided lab solution outline
+### 7. Keep information access separate from relevance
 
-A minimal implementation needs an ingestion function, a retrieval function returning passage objects, a generation adapter, and a response validator. Keep these boundaries separate. Add five known-answer questions, three missing-evidence cases, two version conflicts, and one unauthorized-access case.
+A document might be relevant but not appropriate for the current user.
 
-Inspect the exact passage list before grading answers. First measure whether required evidence was retrieved. Then measure whether generation used it correctly. End the report with the component you would change and the evidence supporting that decision.
+For example, an internal personnel note should not become part of a public customer answer just because it mentions the shop.
 
-Use [Microsoft's search lessons](https://github.com/microsoft/generative-ai-for-beginners) and [Claude Cookbooks](https://github.com/anthropics/claude-cookbooks) for supplementary implementations. The corpus and retriever above are original.
+The application should choose from information the user is permitted to access. Do not rely only on an instruction asking the model to hide information it should never have received.
 
-## Lab
+We will explore actions and permissions more in Modules 09–10.
 
-Create 15–25 short, original documents about synthetic release and QA processes. Include an old version, a conflicting draft, and a topic with no answer. Implement keyword retrieval first, then optionally embeddings. Return the answer, retrieved IDs, and citations.
+### 8. Inspect two different failure points
 
-Evaluate a small set before improving chunking or retrieval. Keep the corpus and question-set versions with your results.
+If a return question receives Document H, the source-selection step failed.
 
-## Review and answers
+If the model receives Document R but answers “30 days,” the needed evidence was present and the answer-generation step failed.
 
-- **Does adding more context always help?** No; irrelevant or conflicting content can harm performance and increase cost.
-- **Are real document IDs sufficient evidence?** No; the associated passages must support the claims.
-- **Where should access rules be enforced?** In application/retrieval controls before unauthorized content reaches the model.
-- **What should happen with an absent answer?** Follow the specified abstention or clarification behavior.
+That distinction helps you decide what to improve. Rewriting the answer instructions may not solve a search process that never finds the returns policy.
 
-## Exit evidence
+## Walkthrough: trace two bad answers
 
-A runnable assistant, corpus provenance, retrieval logs, citation checks, and reviewed missing-evidence cases.
+**Question:** “Can I return an undamaged book after ten days with a receipt?”
 
-## Supplementary reading and attribution
+| Run | Source supplied | Illustrative answer | What happened? |
+|---|---|---|---|
+| A | Document H | “The shop opens at 10 a.m.” | Wrong source selected and question not answered. |
+| B | Document R | “Yes, returns are allowed within 30 days.” | Relevant source supplied, but the answer changed its meaning. |
 
-Use search lessons in [Microsoft's course](https://github.com/microsoft/generative-ai-for-beginners) and RAG recipes in [Claude Cookbooks](https://github.com/anthropics/claude-cookbooks). The synthetic corpus you write should have its own provenance.
+For A, investigate how the application chose documents.
+
+For B, inspect the instructions and generation behavior. Preserve the actual prompt and answer if this occurs in a live run.
+
+Now consider:
+
+> “What does express delivery cost?”
+
+Document D does not contain a price. Selecting D does not make a price available. The correct behavior is to explain the missing information.
+
+## Try it yourself
+
+For each question, choose a source and write the answer it supports:
+
+1. “What time do you close on Friday?”
+2. “Do I need a receipt for a return?”
+3. “How long does delivery within Riverton take?”
+4. “What does overseas delivery cost?”
+
+For the last question, say what the sources do and do not establish. Do not invent an overseas service or assert it is impossible.
+
+## Assignment
+
+Create three short documents for your assistant idea. Give each a name and say which version is current for your exercise.
+
+Write five questions. For each question, record:
+
+- The document or passage you would select.
+- Why it is relevant.
+- The answer it supports.
+- Any information still missing.
+
+Optionally paste a selected source and question into an AI chat tool. Compare the actual response with the evidence.
+
+Doing the selection manually teaches the process. It does not mean you have built an automated RAG application yet.
+
+## Knowledge check
+
+1. What does retrieval do?
+2. Does a real source identifier make an answer correct?
+3. Why can a very short fragment lose important meaning?
+4. What should you inspect if the wrong document was supplied?
+5. Does RAG eliminate unsupported answers?
+
+<details>
+<summary>Read the answers and explanations</summary>
+
+1. It finds candidate information for the question, within relevant constraints.
+2. No. The source must support the associated claim.
+3. It may omit conditions, exceptions, or the topic to which a rule applies.
+4. The source-selection process before focusing only on wording.
+5. No. Retrieval and generation can both fail.
+
+For the practice questions: H supports Friday closing at 6 p.m.; R states the receipt requirement; D gives three working days within Riverton. No source gives an overseas-delivery price.
+
+</details>
+
+## What you learned
+
+You understand how an assistant can use documents without assuming the model already knows the business.
+
+Continue when you can trace a question to its source and explain whether the answer uses that source correctly.
+
+## Keep learning
+
+Continue to [Module 08: comparing versions fairly](08-rag-evaluation-and-statistics.md).
+
+The [optional technical note](../advanced/07-rag-engineering.md) explains search implementations and document preparation. RAG examples in [Claude Cookbooks](https://github.com/anthropics/claude-cookbooks) are later coding resources.
+
+The documents, walkthrough, and activities here are original; see [attributions](../ATTRIBUTIONS.md).

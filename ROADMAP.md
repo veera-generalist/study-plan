@@ -1,44 +1,51 @@
 # Learning direction
 
-## Current focus: the first three lessons
+The course develops understanding before asking you to automate it. Move at a pace that lets you explain the examples and complete the activities.
 
-| Order | Lesson | Main question | Your result |
-|---|---|---|---|
-| 1 | [Getting started with generative AI](modules/01-python-engineering.md) | What does an AI application do, and how do I check an answer? | A small assistant idea |
-| 2 | [Understanding and comparing language models](modules/02-model-foundations.md) | Why might replies differ, and what makes one useful? | A three-question comparison |
-| 3 | [Writing useful prompts](modules/03-prompting-and-development.md) | How do I ask for a useful response and improve the request? | A prompt experiment |
+## Stage 1 — Understand the basics
 
-Work at a pace that lets you explain the examples and assignments. You can spread a lesson across several study sessions. No Python setup or paid service is required for this introductory path.
+| Lesson | Main question | Your result |
+|---|---|---|
+| [01](modules/01-python-engineering.md) | What does an AI application do? | A small assistant idea |
+| [02](modules/02-model-foundations.md) | Why do replies differ, and what makes one useful? | A three-question comparison |
+| [03](modules/03-prompting-and-development.md) | How do I ask for a useful response? | A prompt experiment |
 
-## Where the wider course is heading
+## Stage 2 — Learn to evaluate
 
-AI engineering involves building applications that use model capabilities. Evaluation involves collecting evidence about whether those applications do their intended job well. You will eventually practice both.
+| Lesson | Main question | Your result |
+|---|---|---|
+| [04](modules/04-datasets-and-oracles.md) | Which questions should I keep and why? | A small question collection |
+| [05](modules/05-evaluation-harnesses.md) | What makes an answer meet the requirements? | Review rules and outcomes |
+| [06](modules/06-judges-and-human-review.md) | How can another reviewer help, and how do I check their judgment? | A reviewer comparison |
 
-Python will support implementation and automation when you reach the coding stage. It is not the first learning hurdle in the rewritten introduction.
+The optional Python example in Lesson 05 introduces counting only after the review task is clear.
 
-<details>
-<summary>Later technical topics — earlier draft, not yet rewritten</summary>
+## Stage 3 — Understand the application
 
-| Module | Topic |
-|---|---|
-| 04 | Evaluation examples, datasets, and expected behavior |
-| 05 | Measuring responses and writing evaluation programs |
-| 06 | Human review and model-assisted grading |
-| 07 | Answering with information retrieved from documents |
-| 08 | Comparing results and understanding uncertainty |
-| 09 | Tools and agents |
-| 10 | Testing agent actions and security boundaries |
-| 11 | Diagnosing failures and releasing changes |
-| 12 | Improving an application and presenting a project |
+| Lesson | Main question | Your result |
+|---|---|---|
+| [07](modules/07-rag-engineering.md) | How does an assistant use documents? | Questions connected to evidence |
+| [08](modules/08-rag-evaluation-and-statistics.md) | Did my change actually help? | A paired comparison |
+| [09](modules/09-tools-and-agents.md) | How can an assistant perform a controlled action? | A pretend workflow |
 
-These are future topics in the existing technical draft. Their earlier assignments, dataset sizes, and technical prerequisites should not be treated as requirements for the current first-three-lesson introduction.
+## Stage 4 — Investigate and build
 
-The original 24-week estimate was a planning estimate, not a deadline or evidence of readiness.
+| Lesson | Main question | Your result |
+|---|---|---|
+| [10](modules/10-agent-evaluation-and-security.md) | What happens when inputs, permissions, or tools go wrong? | Difficult scenarios |
+| [11](modules/11-observability-and-delivery.md) | Where did a failure begin? | A step record and recommendation |
+| [12](modules/12-optimization-and-career.md) | How do I combine the work into a small project? | A prototype with evidence |
 
-</details>
+## Add implementation when ready
 
-## When this phase is complete
+Python is the implementation language for the coding path. Start by automating a small process you already understand, then work toward model integration, document search, and controlled tools.
 
-Keep your assistant idea, comparison, and prompt experiment. You should be able to explain which information an answer uses, recognize an invented claim, and describe why you changed a prompt.
+The [optional technical notes](advanced/README.md) retain the deeper material for all twelve topics. They are available as a second pass, not required reading before every introductory lesson.
 
-For the current phase, that is enough to demonstrate progress. The [course guide](COURSE_GUIDE.md) explains how to study and record your observations.
+The earlier 24-week estimate was a planning suggestion, not a deadline or readiness guarantee. Reading, written activities, live experiments, and full software implementation take different amounts of time.
+
+## What completion means
+
+For the written path, keep the lesson assignments and explain your decisions. A simulated workflow demonstrates understanding, while a working application and live-model evaluation require separate implementation evidence.
+
+The [course guide](COURSE_GUIDE.md) explains how to record that distinction. [PROGRESS.md](PROGRESS.md) lets you track your actual work.

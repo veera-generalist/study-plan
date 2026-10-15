@@ -1,10 +1,10 @@
 # Contributing to this study plan
 
-Write for people learning AI for the first time. For Modules 01–03, use an introduction, learning objectives, a scenario, explained concepts, a worked example, guided practice, an assignment, a knowledge check with answer explanations, and further reading. Define unfamiliar words where they appear. Use examples that suit the idea; do not force comparisons to the learner's profession. Python code is optional at this introductory stage. Modules 04–12 retain their earlier technical structure until a later rewrite.
+Write for people learning AI for the first time. For all twelve modules, use an introduction, learning objectives, a scenario, explained concepts, a worked example, guided practice, an assignment, a knowledge check with answer explanations, and further reading. Define unfamiliar words where they appear. Use examples that suit the idea; do not force comparisons to the learner's profession. Python code is optional at this introductory stage. Preserve deeper implementation material in the optional technical notes and make clear which activities are written, simulated, or live.
 
 For an edit:
 
-Explain new technical words when first introduced and add a plain-language glossary entry with a QA example. Keep each module's **Terms to know** links useful for someone new to AI.
+Explain unfamiliar words where they first appear. Add or link a plain-language glossary entry when useful, using an example that fits the concept. Do not require a learner to read a large vocabulary list before beginning.
 
 1. Explain the learning problem or factual correction.
 2. Update the lesson, example, and answer guidance together.

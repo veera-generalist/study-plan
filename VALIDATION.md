@@ -13,8 +13,9 @@ python3 scripts/validate.py
 This command downloads nothing and makes no model/service calls. It checks:
 
 - Local Markdown file links and heading fragments, including glossary navigation.
-- Beginner lesson sections in Modules 01–03 and the existing technical sections in Modules 04–12.
-- Agreement between saved technical scripts and their displayed code: examples 01–03 now live in the optional advanced notes; 04–12 remain in the later draft modules.
+- Beginner lesson sections across all twelve modules.
+- Agreement between all twelve saved technical scripts and the code displayed in their optional advanced notes.
+- Agreement and successful execution for the small optional beginner counting example in Lesson 05.
 - Execution of all twelve examples with assertions enabled.
 - **28 unit tests:** 15 evaluator tests, 6 navigation/verification tests, and 7 optional-adapter simulated-response tests.
 - Python syntax compilation.
@@ -43,7 +44,7 @@ Primary documentation destinations were retrieved during review as described in 
 
 ## Scope and limitations
 
-The first three lessons have been rewritten for beginners. Their written assignments and knowledge checks do not require Python. Verification of the optional code is repository maintenance, not a prerequisite for a learner. The earlier technical review predates this teaching rewrite; later Modules 04–12 have not been rewritten.
+All twelve lessons have been rewritten for beginners. Their written assignments and knowledge checks can be completed without Python. Lesson 05 provides an optional counting example; deeper code is in the advanced notes. Code and structural checks are repository maintenance, not an automated assessment of teaching quality. The earlier technical review predates this full teaching rewrite.
 
 The Markdown checker supports the inline-link and ATX-heading syntax used in this repository. It is not a complete Markdown parser and does not check external website fragments.
 

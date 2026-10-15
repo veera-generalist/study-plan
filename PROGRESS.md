@@ -1,39 +1,55 @@
 # Progress tracker
 
-For the current first three lessons, keep your assistant idea, three-question comparison, and prompt experiment. Explain your observations and attempt the knowledge checks. Running code is not required.
+Record your actual learning work. A saved note, worked table, or short explanation can be evidence for a written activity. Do not mark a live experiment or working application complete merely because you read its example.
 
-Status starts as not started. Record a note or evidence link when you complete an activity. The later technical milestones are for future study.
+Suggested statuses: not started, reading, activity complete, assignment complete. Add separate implementation notes when you begin coding.
 
-Useful intermediate statuses are concept example complete, project in progress, and live evidence pending. An offline example passing does not complete a live-model or portfolio assignment; see the [course guide](COURSE_GUIDE.md).
+| Lesson | Assignment | Status | Evidence or note |
+|---|---|---|---|
+| 01 | An assistant idea | Not started | — |
+| 02 | A three-question comparison | Not started | — |
+| 03 | A prompt experiment | Not started | — |
+| 04 | A question collection | Not started | — |
+| 05 | Review rules and reviewed replies | Not started | — |
+| 06 | Reviewer instructions and a comparison | Not started | — |
+| 07 | Questions linked to source passages | Not started | — |
+| 08 | A record of improvements and regressions | Not started | — |
+| 09 | A pretend tool workflow | Not started | — |
+| 10 | Difficult scenarios and expected results | Not started | — |
+| 11 | A step record and change recommendation | Not started | — |
+| 12 | A project with evidence and limitations | Not started | — |
 
-| Module | Status | Evidence / commit | Failure investigated | Review completed |
-|---|---|---|---|---|
-| 01 | Not started | — | — | — |
-| 02 | Not started | — | — | — |
-| 03 | Not started | — | — | — |
-| 04 | Not started | — | — | — |
-| 05 | Not started | — | — | — |
-| 06 | Not started | — | — | — |
-| 07 | Not started | — | — | — |
-| 08 | Not started | — | — | — |
-| 09 | Not started | — | — | — |
-| 10 | Not started | — | — | — |
-| 11 | Not started | — | — | — |
-| 12 | Not started | — | — | — |
+## Written-path milestones
 
-## Milestone checklist
+- [ ] I can distinguish a model from the surrounding application.
+- [ ] I can identify an unsupported claim and explain why it is unsupported.
+- [ ] I have a small question collection with expected behavior.
+- [ ] I can apply clear review rules and preserve uncertain judgments.
+- [ ] I can connect an answer with the source that supports it.
+- [ ] I can describe both improvements and regressions in a comparison.
+- [ ] I can distinguish a proposed action from a completed one.
+- [ ] I have simulated a difficult situation and inspected the ending.
+- [ ] I can follow a failure through a step record.
+- [ ] My project states what I actually did and what remains untested.
 
-- [ ] Offline evaluation lab runs and its deliberate failures are understood.
-- [ ] Classification baseline includes per-class analysis.
-- [ ] Dataset card and labeling guide reviewed.
-- [ ] Held-out cases kept separate from iterative development.
-- [ ] Judge errors measured against human labels.
-- [ ] RAG component failures separated.
-- [ ] Agent tests inspect sandbox state.
-- [ ] Security findings reviewed and regression cases added.
-- [ ] Release report includes uncertainty, cost, and latency.
-- [ ] Portfolio explains limitations and links reproducible evidence.
+## Optional implementation evidence
 
-## Weekly entry
+Track these separately when you choose to build:
 
-Copy [the learning-log template](templates/learning-log.md). Record a concept, an experiment, a surprising failure, and the next question. Update dates based on actual study rather than assigning invented completion dates.
+- Python examples I ran and can explain:
+- A model adapter I implemented and the environment used:
+- Actual model requests and raw responses:
+- Document search I automated:
+- Tool behavior and stored state I checked:
+- A reproducible comparison and its limitations:
+
+## Study-session note
+
+- Lesson and date:
+- What I understood:
+- An example I tried:
+- My observation and reason:
+- What is still unclear:
+- Next small step:
+
+The [learning-log template](templates/learning-log.md) is also available if you want a longer record.

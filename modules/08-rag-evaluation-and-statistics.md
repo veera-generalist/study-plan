@@ -1,163 +1,210 @@
-# Module 08 — RAG evaluation and statistical reasoning
+# Module 08 — Compare two versions fairly
 
-[Course index](../README.md) · Weeks 15–16 · Prerequisites: Modules 04–07
+[Previous: answering from documents](07-rag-engineering.md) · [Course home](../README.md) · [Next: tools and actions](09-tools-and-agents.md)
 
-**Terms to know:** [Recall at k](../GLOSSARY.md#recall-at-k) · [MRR](../GLOSSARY.md#mrr) · [Paired comparison](../GLOSSARY.md#paired-comparison) · [Bootstrap](../GLOSSARY.md#bootstrap) · [Confidence interval](../GLOSSARY.md#confidence-interval)
+**Before you begin:** know how to collect questions and review answers. You do not need statistical formulas.
 
-## Outcomes
+## Introduction
 
-Separate retrieval from answer quality and compare configurations without overstating a small score difference.
+You change the prompt. The assistant gives a better reply to the question you were working on.
 
-## Lesson 1: Define the measurement unit
+Has the application improved?
 
-For document-level judgments, Recall@k is the fraction of known relevant documents retrieved among the first k results. Precision@k is the fraction of the evaluated top-k results judged relevant; specify treatment when fewer than k results are returned. Reciprocal rank is 1/rank of the first relevant result, or zero if none is found; MRR averages this across queries.
+Perhaps. It may also have become worse on a different question.
 
-These metrics depend on relevance labels. Incomplete labels can penalize genuinely useful results. Claim-based, LLM-scored context recall is a different operational definition from document Recall@k; name exactly which you use.
+This lesson shows how to compare two versions using the same tasks and how to describe the result without claiming more than the evidence supports.
 
-Answer faithfulness assesses support from retrieved context. Correctness assesses the task's requirements and reference evidence. A faithful answer can repeat an outdated document. A correct guess can lack supporting evidence. Citation validity and citation support are also distinct.
+## Learning objectives
 
-## Lesson 2: Compare the same cases
+By the end, you should be able to:
 
-Run A and B on identical cases and preserve case-level differences. In a 100-case experiment, A passes 82 and B passes 85. B might fix eight cases and break five, including a critical one. The aggregate difference is insufficient for a release decision.
+1. Preserve an earlier version for comparison.
+2. Compare versions on the same questions and rules.
+3. Record improvements and regressions separately.
+4. Explain why a small result is uncertain.
+5. Choose a next step using quality, time, and cost.
 
-Use a paired bootstrap to estimate uncertainty in a mean difference: sample case IDs with replacement, keep each sampled case's A/B outcomes paired, compute the difference, and repeat. State the sampling unit and interval method. If many questions come from one document, a document-level or clustered analysis may better reflect dependence.
+## Scenario: a prompt change has mixed effects
 
-Repeated trials on the same question are not independent new questions. Separate task variation from execution variation. A fixed seed makes an analysis reproducible, not a model perfectly deterministic.
+You add a stronger instruction to the Maple Books prompt:
 
-## Lesson 3: Interpret the result honestly
+> When information is missing, say so rather than adding a plausible detail.
 
-Confidence intervals express uncertainty under assumptions about sampling and measurement. They do not correct mislabeled cases, judge bias, or unrepresentative datasets. Define practical significance and risk thresholds before comparing many versions. Repeatedly selecting the best result from numerous experiments can overfit the evaluation.
+You want to know whether this helps with express-delivery and payment questions while keeping known answers correct.
 
-Report sample sizes for slices. Zero observed critical failures is useful evidence but does not prove a zero underlying failure rate.
+Call the earlier prompt **A** and the revised prompt **B**. The earlier version is your **baseline**: the reference you compare the change against.
 
-## Detailed tutorial: from scores to defensible conclusions
+## Lesson
 
-### 1. Work a retrieval example by hand
+### 1. Save what you changed
 
-Suppose the relevant documents are D2 and D4. A retriever returns D1, D2, D3 in its first three results. Recall@3 is 1/2: one of two relevant documents was found. Precision@3 is 1/3: one of the three returned documents is relevant. The first relevant document is at rank two, so reciprocal rank is 1/2.
+Keep the actual text of both prompts, the shop facts, and the questions.
 
-If a second query's first relevant document appears at rank one, the MRR across these two queries is (0.5 + 1)/2 = 0.75. Document what happens when no relevant document is retrieved: reciprocal rank is zero.
+Write a short hypothesis:
 
-If labels omit another genuinely relevant passage, your metric can unfairly penalize retrieval. Relevance judgments and their completeness are part of the measurement, not a neutral background detail.
+> B should invent fewer details when the shop information does not answer a question.
 
-### 2. Grade claims rather than citation decoration
+A hypothesis says what improvement you expect and why.
 
-An answer says, “Roll back after five consecutive failures, and notify Finance within two hours.” The retrieved policy supports the threshold but says nothing about Finance. Split the response into material claims. One is supported, one is not.
+If you change the model, the prompt, and the documents together, you can compare the overall packages. You will have less evidence about which individual change caused the difference.
 
-A claim-support proportion would be one supported claim out of two under this simplified decomposition. A strict groundedness gate might fail the entire answer because any unsupported material claim is unacceptable. These are different aggregation rules over similar evidence.
+For an early exercise, change one main thing at a time.
 
-A model-based faithfulness metric also depends on how it extracts claims and judges support. It can make mistakes at either step. Read the exact [Ragas faithfulness definition](https://docs.ragas.io/en/stable/concepts/metrics/available_metrics/faithfulness/) before comparing its scores with another implementation.
+### 2. Use the same questions and review rules
 
-### 3. Understand what your sample represents
+If A receives easy opening-hours questions while B receives incomplete delivery questions, their scores are not a fair direct comparison.
 
-An observed pass rate is a statistic over evaluated units. To infer future performance, you need assumptions about how those units relate to the target workload. A confidence interval over hand-picked examples does not make them representative.
+Give both versions the same questions and available facts. Apply the same checking rules.
 
-Repeated executions of one question explore execution variation. Different questions explore task variation. Ten runs of one easy question are not equivalent to ten independent user tasks. If your data contains related questions from the same document or customer, consider grouping that dependence in sampling and analysis.
+For live runs, record which tool or model you used and when. Conversation history or built-in search can affect results, so note those conditions too.
 
-### 4. Paired comparisons preserve information
+You do not need perfect experimental control to start learning, but you do need an honest description of what was compared.
 
-If A and B answer the same questions, examine case-level differences. A candidate can gain two tasks and lose one, giving a net gain of one. Knowing the lost task's risk can change the decision.
+### 3. Look at each pair of answers
 
-The paired bootstrap samples task differences with replacement. Each sampled difference retains the A/B pairing. Sampling A and B separately discards that relationship and estimates a different uncertainty structure.
+For every question, ask:
 
-A percentile interval is a useful teaching tool, not a guarantee that all small-sample statistical issues disappear. Small or dependent datasets can make intervals unstable. State the method, seed, repetition count, and sampling unit.
+- Did both versions meet the requirements?
+- Did B fix an answer that A got wrong?
+- Did B break an answer that A got right?
+- Did both miss the requirement?
 
-### 5. Runnable statistical example
+A deterioration after a change is called a **regression**.
 
-```python
-"""Module 08: paired bootstrap and a Wilson interval on synthetic outcomes."""
-import random
-from math import sqrt
-from statistics import mean
+Keeping the pairs visible helps you understand the result. A single total can hide a newly broken behavior.
 
-# Same eight tasks, evaluated under two configurations.
-baseline = [1, 1, 1, 1, 0, 0, 0, 0]
-candidate = [1, 1, 1, 0, 1, 1, 0, 0]
+### 4. Treat important failures seriously
 
+Imagine B fixes two minor formatting issues but begins giving the wrong Sunday opening hours.
 
-def paired_bootstrap(a, b, repetitions=2000, seed=7):
-    if len(a) != len(b) or not a:
-        raise ValueError("Need nonempty paired samples")
-    rng = random.Random(seed)
-    differences = [right - left for left, right in zip(a, b)]
-    estimates = sorted(
-        mean(rng.choice(differences) for _ in differences)
-        for _ in range(repetitions)
-    )
-    return mean(differences), (
-        estimates[int(0.025 * repetitions)],
-        estimates[int(0.975 * repetitions) - 1],
-    )
+It might score better on a simple count while creating a more serious business problem.
 
+Decide which requirements are mandatory before comparing. For our exercise, invented policy promises are important because customers may act on them.
 
-def wilson(successes, total, z=1.96):
-    if total <= 0 or not 0 <= successes <= total:
-        raise ValueError("Invalid binomial counts")
-    p = successes / total
-    denominator = 1 + z*z / total
-    center = (p + z*z / (2*total)) / denominator
-    half = z * sqrt(p*(1-p)/total + z*z/(4*total*total)) / denominator
-    return center - half, center + half
+This does not mean every small wording difference has the same consequence as a factual error.
 
+### 5. Understand what a small sample can tell you
 
-difference, interval = paired_bootstrap(baseline, candidate)
-assert difference == 0.125
-assert interval[0] <= difference <= interval[1]
-assert interval[0] <= 0 <= interval[1]
-lower, upper = wilson(8, 8)
-assert lower < 1.0 and abs(upper - 1.0) < 1e-12
-print("Observed candidate-minus-baseline:", difference)
-print("Illustrative paired percentile interval:", interval)
-print("Wilson interval for 8/8 passes:", (round(lower, 3), round(upper, 3)))
-```
+If B meets the requirements on five of six questions, you have a result for those six questions.
 
-Run [the saved example](../labs/module-examples/08_example.py). The candidate improves from four to five passes among eight tasks: an observed increase of 0.125. The interval includes zero, illustrating substantial uncertainty in this tiny synthetic sample.
+You do not yet know how it handles every possible question.
 
-The Wilson interval for eight passes out of eight has a lower bound below one. Observing no failures does not establish perfect reliability. This interval assumes an appropriate binomial sampling interpretation; it does not validate your dataset or judge.
+A small hand-picked collection is useful for learning and finding problems. It is not a precise estimate of real-world success.
 
-The random seed makes the analysis repeatable. It does not make model generation deterministic.
+Later, you can study larger samples and formal uncertainty calculations. For now, use careful wording:
 
-### 6. Practical significance and release decisions
+> B improved these cases in this exercise, but I need more varied questions before making a broad claim.
 
-A statistically clear small gain can be operationally irrelevant. A modest overall gain can also conceal a severe regression in an important slice. Decide in advance what improvement would matter and which constraints cannot be traded away.
+### 6. Repeated runs answer another question
 
-For example, you might accept a slower response if it substantially improves critical correctness, or reject a cheaper model because it fails approval checks. These decisions require task-specific requirements, not a universal numeric threshold.
+Try the same request again. A model may produce different wording.
 
-When many candidate prompts are compared and only the best is reported, selection can overfit the dataset. Use development data for repeated search, then independent held-out evidence for the final candidate. Record how many alternatives were considered.
+If the meaning remains correct, that variation may be harmless. If one run invents a price and another admits the information is missing, you have a consistency problem to investigate.
 
-### 7. Latency and cost measurement
+Repeated attempts at one question do not replace trying different questions. They reveal different kinds of variation.
 
-Report the measurement boundary: full user task, model call, retrieval operation, or grading step. p95 latency describes a percentile, but estimates from a handful of tasks are noisy. Keep errors and timeouts visible; dropping them makes latency look better.
+Record what you observed rather than keeping only the best reply.
 
-Calculate cost per successful task as total application execution cost divided by completed successful tasks, under your stated definition. If no tasks succeed, the ratio is undefined; report that directly. Keep evaluation-model costs separate from production application cost.
+### 7. Keep final checks separate from improvement
 
-### 8. Guided exercise and answer reasoning
+Use development questions to inspect failures and revise the prompt.
 
-Swap one candidate success for a failure on a critical case while fixing an easy case. The total score stays unchanged. The release decision can still change because the failure consequences differ. Explain that explicitly rather than trying to force all risk into one average.
+Once you select a candidate, keep it unchanged while trying your reserved fresh questions.
 
-Next, repeat each row ten times and compute an interval as though all rows were independent. It may become narrower, but you have not collected new independent task information. Describe why clustered or task-level treatment is more appropriate.
+If you use those fresh results to make another change, record that the questions are now influencing development. Reserve new examples before making another claim of independent assessment.
 
-For an answer-quality report, include raw counts, slice definitions, grader limitations, a paired result table, and a recommendation. The reader should see what was observed separately from what you infer.
+This habit matters more at this stage than memorizing statistical names.
 
-Python's [statistics documentation](https://docs.python.org/3/library/statistics.html) is a reference for the standard-library functions used here; the interval implementation and exercise are original.
+### 8. Include time and cost in the decision
 
-## Lab
+A reply can be accurate but too slow for the intended use.
 
-Compare two retrieval strategies on development questions first. Report document recall, answer correctness, abstention behavior, latency, and per-case wins/losses. Implement a paired bootstrap with a recorded seed. Inspect development failures and select/freeze the candidate before its final held-out assessment. If held-out failures drive another change, treat those cases as development evidence and reserve fresh independent cases for a later final assessment.
+**Latency** means how long an operation takes. Decide whether you are timing a model call or the complete customer task.
 
-Write one paragraph distinguishing observed improvement from what you can infer about future production traffic.
+**Cost** includes unsuccessful attempts and retries when you are estimating what it takes to complete a useful task.
 
-## Review and answers
+For the first manual exercise, simply record any obvious wait or effort. You do not need to calculate precise production prices.
 
-- **Is a three-point gain automatically reliable?** No; inspect uncertainty, sampling, measurement, and practical impact.
-- **Does faithfulness establish current factual correctness?** No; the retrieved evidence may be outdated or wrong.
-- **Why pair cases in a bootstrap?** To preserve the relationship between A and B on the same task.
-- **Can bootstrap fix biased labels?** No; measurement quality must be addressed separately.
+## Walkthrough: count improvements and losses
 
-## Exit evidence
+Use the six questions introduced in Module 04. The outcomes below are invented teaching data.
 
-A paired report with definitions, counts, uncertainty assumptions, critical regressions, and a justified decision.
+| Question | A meets requirements? | B meets requirements? | Change |
+|---|---|---|---|
+| Q01 — Sunday opening | Yes | No | B breaks a correct answer. |
+| Q02 — Eligible return | Yes | Yes | Both meet the requirements. |
+| Q03 — Express-delivery price | No | Yes | B fixes an invented-detail problem. |
+| Q04 — Incomplete return question | No | Yes | B handles missing customer details better. |
+| Q05 — Saturday closing | Yes | Yes | Both meet the requirements. |
+| Q06 — Payment methods | Yes | Yes | Both correctly state the information is missing. |
 
-## Supplementary reading and attribution
+A meets four of six requirements. B meets five of six.
 
-See Ragas documentation for [context recall](https://docs.ragas.io/en/stable/concepts/metrics/available_metrics/context_recall/) and [faithfulness](https://docs.ragas.io/en/stable/concepts/metrics/available_metrics/faithfulness/). Framework metric names are not interchangeable definitions.
+B fixes two cases and breaks one. Its total is higher, but the new Sunday error still needs attention.
+
+A reasonable conclusion is:
+
+> B improved missing-information handling in this exercise, but I would revise or investigate the Sunday regression before choosing it for customer use.
+
+Because all six outcomes are visible and discussed here, treat this table as practice data, not a hidden final assessment.
+
+## Try it yourself
+
+Write a different set of six paired outcomes in which A and B have the same total, but B fixes one question and breaks another.
+
+Then answer:
+
+1. Would the unchanged total tell the complete story?
+2. What information would help you decide whether the change is useful?
+3. Which examples would you inspect first?
+
+You can do this without running any model.
+
+## Assignment
+
+Compare two prompt versions on a small development collection.
+
+Keep the prompts, questions, replies, review rules, and paired outcomes. Write:
+
+- What you changed.
+- What improved.
+- What regressed.
+- What remains uncertain.
+- Whether you would keep, revise, or reject the change.
+
+Only after selecting the candidate should you try the reserved questions. Label supplied example data and live results accurately.
+
+## Knowledge check
+
+1. Why should both versions receive the same questions?
+2. Can the version with the higher total still have an important new problem?
+3. What does repeating one question reveal?
+4. Can six successful examples prove the assistant always works?
+5. What should happen if fresh-check results lead to another prompt change?
+
+<details>
+<summary>Read the answers and explanations</summary>
+
+1. It makes the task-level comparison more meaningful.
+2. Yes. Look at which behaviors changed and their consequences.
+3. It can reveal variation on that request, but does not establish breadth across tasks.
+4. No. The sample is limited.
+5. Treat those questions as development evidence and reserve new independent checks for a later assessment.
+
+For the activity, any equal-total example with at least one win and one loss demonstrates why the total alone is incomplete.
+
+</details>
+
+## What you learned
+
+You can now compare changes using visible evidence rather than choosing whichever version produced the most impressive recent answer.
+
+Continue when you can explain a win, a loss, and the limits of your comparison.
+
+## Keep learning
+
+Continue to [Module 09: giving an assistant a small action](09-tools-and-agents.md).
+
+The [optional technical note](../advanced/08-rag-evaluation-and-statistics.md) introduces retrieval metrics and statistical calculations. Precise metric definitions are documented by [Ragas](https://docs.ragas.io/en/stable/concepts/metrics/available_metrics/faithfulness/).
+
+The outcome table and exercises here are original; see [source credits](../ATTRIBUTIONS.md).

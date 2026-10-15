@@ -1,10 +1,10 @@
 # Setup
 
-## For the first three lessons
+## For the written lessons
 
 No installation is required. Start with [Lesson 01](modules/01-python-engineering.md) and use a notebook or text document for the activities. An AI chat tool you already use is optional. The written examples let you begin without one.
 
-The setup below is for later coding exercises and repository maintenance. You can skip it while working through the current three lessons.
+The setup below is for optional coding exercises and repository maintenance. All twelve lessons have a written practice path; Lesson 05 also offers a small optional Python example.
 
 <details>
 <summary>Optional Python setup and later coding exercises</summary>
@@ -25,7 +25,7 @@ python3 -m unittest discover -s labs/offline-evaluation -p 'test_*.py' -v
 python3 scripts/check_course.py
 ```
 
-The module-example runner verifies the saved technical examples and their displayed code. Examples 01–03 are now in the optional advanced notes; examples 04–12 remain in the later draft modules. It should report twelve passing examples. The evaluator writes a report under the lab's ignored reports directory; the command above deliberately uses the fixture's 0.75 pass rate so setup exits successfully. That educational threshold is not a production quality recommendation. Neither command makes network requests.
+The module-example runner verifies the saved technical examples and their displayed code. All twelve technical examples are now displayed in the optional advanced notes. It should report twelve passing examples. The evaluator writes a report under the lab's ignored reports directory; the command above deliberately uses the fixture's 0.75 pass rate so setup exits successfully. That educational threshold is not a production quality recommendation. Neither command makes network requests.
 
 After setup, run the strict gate separately:
 

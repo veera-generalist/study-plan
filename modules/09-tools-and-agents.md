@@ -1,166 +1,239 @@
-# Module 09 — Tool use, workflows, and agents
+# Module 09 — Give an assistant a small action
 
-[Course index](../README.md) · Weeks 17–18 · Prerequisites: Modules 01–08
+[Previous: comparing versions](08-rag-evaluation-and-statistics.md) · [Course home](../README.md) · [Next: testing difficult situations](10-agent-evaluation-and-security.md)
 
-**Terms to know:** [Agent](../GLOSSARY.md#agent) · [Workflow](../GLOSSARY.md#workflow) · [Tool and function calling](../GLOSSARY.md#tool-and-function-calling) · [State](../GLOSSARY.md#state) · [Idempotency](../GLOSSARY.md#idempotency) · [MCP](../GLOSSARY.md#mcp)
+**Before you begin:** understand the difference between an answer and the information supporting it. This lesson uses a paper simulation; it does not place orders or change a real system.
 
-## Outcomes
+## Introduction
 
-Build an explicit, bounded workflow and understand where model-driven decisions add value.
+An assistant can explain how returns work. A more capable application might also look up an order or prepare a return request.
 
-## Lesson 1: Workflow versus agent
+Those are different responsibilities.
 
-A workflow follows application-defined control flow. An agent delegates some action selection or execution planning to a model. Many useful systems combine both. Start with the simplest control flow that meets the task; additional autonomy expands the behavior you must test.
+Generating the sentence “Your request has been saved” does not establish that anything was actually saved. To perform an action, the application needs a real capability and rules about using it.
 
-A practical QA assistant can follow: interpret request, retrieve a bug, gather supporting documents, draft a ticket, seek approval, and save to a sandbox. The model may draft content while application code controls permissions and state transitions.
+This lesson introduces tools and agents through a small, visible process.
 
-## Lesson 2: Tool contracts
+## Learning objectives
 
-A tool contract includes its name, purpose, input schema, output schema, permissions, failure behavior, and side effects. Distinguish a read tool from a write tool. Validate arguments before execution, and validate the result before trusting it.
+By the end, you should be able to:
 
-The model proposes tool calls. Application code determines whether they are allowed and executes them. A textual instruction is not an authorization mechanism. Approval should bind to the actual action and arguments; changing the ticket after approval should require a fresh decision.
+1. Explain what a tool lets an assistant do.
+2. Distinguish a proposed action from a completed action.
+3. Describe a simple workflow with an approval step.
+4. Explain why repeated requests need careful handling.
 
-Idempotency helps prevent duplicate effects when a request is retried. Use an operation key and inspect durable state. Bound retries, total steps, execution duration, and spend. Define what happens when a budget is exhausted.
+## Scenario: prepare a request for shop staff
 
-## Lesson 3: State and recovery
+For this lesson, add a fictional internal task:
 
-Persist enough state to resume safely. A crash after a successful write but before receiving its response is a classic duplicate-action risk. Recovery should inspect the operation's recorded state rather than blindly repeating the write.
+> A customer may ask the assistant to prepare a return-request draft for shop staff. Preparing a draft does not approve a return or promise a refund.
 
-Treat tool output as external data. A search result containing “ignore your instructions” remains document content. Learn MCP later as an integration protocol for exposing capabilities; a protocol does not supply application-specific permissions automatically.
+This is a new application feature, not a change to Maple Books' return policy.
 
-## Detailed tutorial: implement the controls around an agent
+The existing conditions remain: an undamaged book, within 14 days, with a receipt.
 
-### 1. Decide which decisions need a model
+We will simulate looking up an order and saving a draft in a practice notebook.
 
-A QA workflow can have explicit states: received, evidence_collected, draft_ready, awaiting_approval, saved, or failed. Application code determines legal transitions. A model can summarize evidence or propose a read tool within those states.
+## Lesson
 
-An agentic loop gives the model more responsibility for deciding the next action. At each step, the application supplies permitted tools and current context, receives a proposed action, validates it, executes it if allowed, records the result, and either continues or stops.
+### 1. A tool is a capability exposed by the application
 
-This loop needs a stopping rule. A maximum step count, total deadline, token/spend budget, and tool-specific permissions are engineering requirements. A model instruction saying “be efficient” is not a reliable execution limit.
+A **tool** is a function the surrounding software makes available for a defined purpose.
 
-### 2. Write a tool contract as carefully as an API contract
+Examples include:
 
-For get_bug, specify the identifier format, authorized scope, not-found behavior, and response schema. For save_draft, specify required fields, side effects, approval requirements, idempotency, and error semantics.
+- Look up an order.
+- Search an approved document.
+- Save a return-request draft.
 
-Tool descriptions influence model selection, but validation still belongs in executable code. Reject extra or malformed arguments where appropriate. Never pass unrestricted generated strings into a shell or database interpreter.
+The model can propose using a tool. Application code decides whether the request is valid and permitted, then performs it.
 
-Distinguish model intent from actual execution. A proposed call can be denied. A permitted call can fail. A successful tool response can still represent an incorrect business action. Preserve each outcome in the trace.
+A model-generated request is not automatically authority to act.
 
-### 3. Approval must refer to an actual action
+### 2. Describe the tool clearly
 
-Suppose the user approves “Create a draft ticket about B-42.” The model then changes the target to B-99. A generic approved=true flag can accidentally authorize the changed action.
+A useful tool description explains:
 
-Bind approval to the action type, target, relevant content, user identity, and any required expiry or scope. The demonstration below uses a content hash to illustrate one part of this binding. In production, the hash must be stored and checked through trusted application state. A model cannot be allowed to invent its own approval token.
+- What it does.
+- What information it needs.
+- What it returns.
+- What it can change.
+- What happens when the request cannot be completed.
 
-A content hash is not authentication, a signature, or proof of human approval. Anyone with the content can compute it. The security property comes from who can create and authorize the trusted approval record.
+For our paper exercise:
 
-### 4. Idempotency and ambiguous outcomes
+| Tool | Needs | Returns or changes |
+|---|---|---|
+| Look up order | An order ID and an authorized user | The permitted order details, or not found |
+| Prepare draft | The needed order and return details | Text for review |
+| Save draft | The approved draft | A saved draft ID |
 
-A network timeout after sending a write does not tell you whether the write occurred. Retrying blindly can create two tickets. An idempotency key identifies one logical operation so repeats return its stored result.
+You do not need a tool framework to understand these boundaries.
 
-Associate the key with the operation payload. If the same key is reused for different content, reject it. In a concurrent service, an in-memory dictionary is insufficient: use a durable uniqueness constraint or transactional mechanism. Check-and-insert must be atomic across workers.
+### 3. Reading and writing have different consequences
 
-### 5. Runnable sandbox implementation
+Looking up an order reads information. Saving a draft changes stored information.
 
-```python
-"""Module 09: approval bound to content and idempotent sandbox writes."""
-import hashlib
-import json
+A change outside the response text is called a **side effect**.
 
-STORE = {}
+Before a write action, check the details and required permission. For a customer, the draft might need a preview and explicit approval before saving.
 
+Private order information also needs access checks even though reading does not modify a record.
 
-def fingerprint(draft):
-    payload = json.dumps(draft, sort_keys=True, separators=(",", ":"))
-    return hashlib.sha256(payload.encode()).hexdigest()
+### 4. A workflow prescribes the order of steps
 
+A **workflow** is a process the application defines.
 
-def save_draft(draft, approval_hash, operation_id):
-    if not isinstance(draft, dict) or set(draft) != {"bug_id", "title"}:
-        raise ValueError("Invalid draft schema")
-    if not all(isinstance(value, str) and value.strip() for value in draft.values()):
-        raise ValueError("Draft values must be nonempty text")
-    current_hash = fingerprint(draft)
-    if approval_hash != current_hash:
-        raise PermissionError("Approval does not match this draft")
-    if operation_id in STORE:
-        saved = STORE[operation_id]
-        if saved["hash"] != current_hash:
-            raise ValueError("Operation ID reused for different content")
-        return saved["ticket_id"]
-    ticket_id = f"T-{len(STORE) + 1}"
-    STORE[operation_id] = {
-        "ticket_id": ticket_id, "hash": current_hash, "draft": dict(draft)
-    }
-    return ticket_id
+Our example is:
 
+~~~text
+Receive the request
+        ↓
+Check access and find the order
+        ↓
+Collect the needed details
+        ↓
+Prepare and show a draft
+        ↓
+Obtain approval for that draft
+        ↓
+Save it and report the actual result
+~~~
 
-draft = {"bug_id": "B-42", "title": "Investigate authentication outage"}
-approval = fingerprint(draft)  # Simulates approval from trusted application state.
-first = save_draft(draft, approval, "operation-1")
-second = save_draft(draft, approval, "operation-1")
-assert first == second and len(STORE) == 1
-changed = {**draft, "title": "Changed after approval"}
-try:
-    save_draft(changed, approval, "operation-2")
-except PermissionError:
-    pass
-else:
-    raise AssertionError("Changed content must require fresh approval")
-assert len(STORE) == 1
-print("One approved ticket exists:", first)
-print("Retry did not duplicate it; changed content was denied.")
-```
+The model may help write the draft while the application controls the order of operations.
 
-Run [the saved example](../labs/module-examples/09_example.py). It creates exactly one ticket, returns that ticket for a retry, and rejects modified content using the old approval.
+This is already a useful AI application. It does not need unrestricted autonomy.
 
-The fixture computes approval immediately to simulate trusted state; it is not a real approval interface. STORE is an in-memory teaching object. It loses data on restart and does not provide cross-process concurrency control. The purpose is to make approval/content binding and idempotent behavior observable before introducing infrastructure.
+### 5. An agent chooses some actions dynamically
 
-### 6. Persisted state and recovery design
+An **agent** delegates some decisions about what to do next to a model.
 
-Consider a crash after the ticket is stored but before the workflow records completion. Recovery must ask whether operation-1 already completed. If the operation ID and result are durable, it can resume without another write.
+For example, it may choose whether to search a policy document or look up an order first, based on the request.
 
-Record what you need to resume, not every transient thought. Keep the task ID, validated inputs, approved action, completed operation IDs, result references, and remaining budget. External services can change between steps, so decide when stale evidence or approval requires refresh.
+The application still needs boundaries: which tools are available, what is permitted, how long the process can run, and when to ask for help.
 
-A workflow framework can help persist and resume execution, but its defaults do not establish your business invariants. Test the crash boundaries you care about.
+A workflow and an agent can be combined. The useful question is what degree of decision-making the task needs.
 
-### 7. Guided modification and solution reasoning
+### 6. Keep track of progress
 
-Change the title after computing approval. The save should fail before changing state. Then recompute approval in your trusted test setup and save with a new operation ID; it should create a second distinct logical action. Reusing operation-1 for the changed content should fail because the key already belongs to another payload.
+The application needs to know what has happened so far. This is its **state**.
 
-Next, simulate a lost response by calling save twice with the same operation. The store should contain one record. This tests final state, not merely the text returned to the user.
+For the draft request, useful state includes:
 
-Finally, add a read-tool loop with a maximum of three calls. Use a fake planner that keeps requesting another search. The application must stop after the budget is exhausted even if the planner never chooses to stop.
+- Which order is involved.
+- Which details were confirmed.
+- What draft was shown.
+- Whether that specific draft was approved.
+- Whether it was saved.
+- The resulting draft ID.
 
-### 8. Framework and protocol study
+Without this record, the assistant might confuse a proposed action with a completed one.
 
-Learn LangGraph's state and persistence concepts after you can draw the workflow yourself. Learn MCP as a way to expose tools and resources; a protocol does not define whether your user is authorized to create a particular ticket.
+### 7. Approval should refer to the actual draft
 
-Compare the explicit workflow baseline with a model-driven read-tool selection variant. Measure task success, unwanted actions, steps, latency, and cost. Dynamic planning is useful when it improves the task enough to justify the larger behavior space.
+Suppose the customer approves a draft for order O-101. The assistant then changes it to order O-202.
 
-See [LangGraph](https://github.com/langchain-ai/langgraph) and [Hugging Face's Agents Course](https://github.com/huggingface/agents-course) for supplementary implementation study. This sandbox implementation is original.
+The old approval should not automatically authorize the changed draft.
 
-## Lab
+The application must connect approval with the action and details the person actually reviewed. The model should not create its own proof of approval.
 
-Create three tools over synthetic local data:
+For now, write down the exact approved draft in your simulation.
 
-1. Search QA documents.
-2. Fetch a bug by ID.
-3. Save a ticket draft to a sandbox store.
+### 8. Repeating an action can create duplicates
 
-Implement an explicit workflow with approval before saving. Add a step limit, input validation, a simulated timeout, and an idempotency key. Then allow a model to select between the two read tools and compare its behavior with the explicit baseline.
+Imagine the save action completed, but the reply was lost. The customer asks again.
 
-## Review and answers
+Saving again without checking could create two drafts.
 
-- **Who authorizes tool execution?** Application and tool controls, not the generated request alone.
-- **Why distinguish read/write tools?** Side effects change recovery, permission, and evaluation requirements.
-- **Does retrying a timed-out write guarantee safety?** No; the original write may already have completed.
-- **When is an agent justified?** When dynamic decisions improve the task enough to justify additional complexity and evaluation.
+**Idempotency** means handling repeated attempts at the same logical operation without creating additional unintended effects.
 
-## Exit evidence
+You can understand the idea by assigning the intended save an operation ID and checking whether it already has a result. Real implementations need durable, reliable storage; a paper note is only a learning model.
 
-Tool schemas, a state diagram, bounded execution, timeout recovery, and proof that denied approval prevents the write.
+### 9. Set a stopping rule
 
-## Supplementary reading and attribution
+An assistant can get stuck asking for more searches or repeatedly trying a failed tool.
 
-Study [Hugging Face's Agents Course](https://github.com/huggingface/agents-course), [LangGraph](https://github.com/langchain-ai/langgraph), and [Building Effective Agents](https://www.anthropic.com/engineering/building-effective-agents). The workflow and exercises here are original.
+Define a limit, such as a maximum number of steps or a requirement to ask a person after a failed attempt.
+
+“Keep trying until it works” is not a complete operating policy.
+
+## Walkthrough: simulate a draft request
+
+Use these invented order details:
+
+> Order O-101 belongs to the requesting customer. It was purchased ten days ago. The customer reports that the book is undamaged and has the receipt.
+
+The customer asks:
+
+> Please prepare a return request.
+
+A careful sequence is:
+
+1. Confirm that the application is permitted to access O-101.
+2. Retrieve the stated order details.
+3. Prepare a draft saying the customer requests a return and reports those conditions.
+4. Show the draft for review.
+5. Ask whether the customer wants that draft saved.
+6. Save only after approval.
+7. Report the actual saved draft ID.
+
+The assistant should not say the refund has been approved. Preparing a draft and approving a return are different actions.
+
+If the save action fails, the final reply must reflect that failure rather than invent a draft ID.
+
+## Try it yourself
+
+Act as the application and write down what you would do:
+
+1. The order cannot be found.
+2. The customer declines to save the draft.
+3. The draft changes after approval.
+4. The customer repeats the same save request after a delayed reply.
+
+For each case, identify which information or state you need before continuing.
+
+## Assignment
+
+Draw a small workflow for an assistant action of your choice.
+
+Use only a pretend environment. Define the read tools, write tools, required approval, stopping rule, and evidence of completion.
+
+Walk through one normal task and one failure. Record what should be different in the final state.
+
+You do not need to install an agent framework or connect to a real order system.
+
+## Knowledge check
+
+1. Does saying “saved” establish that a tool completed?
+2. Who decides whether a proposed tool call may execute?
+3. What makes an agent different from a fixed workflow?
+4. Why should changed draft content require a new approval decision?
+5. What problem does idempotency address?
+
+<details>
+<summary>Read the answers and explanations</summary>
+
+1. No. Inspect the actual tool result or stored state.
+2. Application and tool controls enforce the relevant rules.
+3. An agent delegates some next-action choices to a model; a workflow prescribes the process.
+4. The earlier approval applied to the details that were reviewed.
+5. It helps prevent repeated attempts from creating duplicate unintended effects.
+
+For the activity: a missing order needs clarification or a recorded failure; declined approval means no save; changed content needs review again; a repeated save requires checking whether the same operation already completed.
+
+</details>
+
+## What you learned
+
+You can distinguish conversation from action and describe the controls around a small tool-using assistant.
+
+Continue when you can explain what proves that an action happened.
+
+## Keep learning
+
+Continue to [Module 10: testing difficult situations](10-agent-evaluation-and-security.md).
+
+The [optional technical note](../advanced/09-tools-and-agents.md) contains a Python sandbox implementation. [Hugging Face's Agents Course](https://github.com/huggingface/agents-course) and [LangGraph](https://github.com/langchain-ai/langgraph) are later implementation resources.
+
+The draft workflow and order examples here are original; see [attributions](../ATTRIBUTIONS.md).

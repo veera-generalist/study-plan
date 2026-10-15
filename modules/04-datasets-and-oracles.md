@@ -1,166 +1,202 @@
-# Module 04 — Evaluation datasets and test oracles
+# Module 04 — Make a small set of questions to learn from
 
-[Course index](../README.md) · Weeks 7–8 · Prerequisites: Modules 01–03
+[Previous: writing useful prompts](03-prompting-and-development.md) · [Course home](../README.md) · [Next: checking answers](05-evaluation-harnesses.md)
 
-**Terms to know:** [Dataset](../GLOSSARY.md#dataset) · [Oracle](../GLOSSARY.md#oracle) · [Label](../GLOSSARY.md#label) · [Annotation and adjudication](../GLOSSARY.md#annotation-and-adjudication) · [Held-out set](../GLOSSARY.md#held-out-set) · [Provenance and dataset card](../GLOSSARY.md#provenance-and-dataset-card)
+**Before you begin:** complete the prompt activity in Module 03. A notebook or simple table is enough.
 
-## Outcomes
+## Introduction
 
-Create an evaluation dataset whose coverage, labels, provenance, and limitations you can defend.
+You have written instructions for the Maple Books assistant. You have also tried a few questions.
 
-## Lesson 1: Specify behavior rather than a magic sentence
+How do you avoid changing the prompt based only on the last answer you happened to see?
 
-A test oracle is the basis for deciding whether behavior is acceptable. For generated answers it may consist of required facts, forbidden claims, supporting evidence, executable constraints, and a review rubric. One reference answer rarely captures all valid phrasings.
+Keep a small, organized collection of questions. Decide what a good answer should contain before looking at the assistant's reply. You can then return to the same questions when you make a change.
 
-For a question whose answer is absent from the available knowledge base, the expected behavior might be to state the limitation and request the missing document. A confident invented answer should fail even if it sounds helpful.
+This lesson introduces a **dataset**: a collection of examples kept for a particular purpose. You do not need hundreds of examples to understand the process.
 
-## Lesson 2: Coverage and provenance
+## Learning objectives
 
-Sample realistic tasks and supplement them with risk-based cases. Include ordinary requests, ambiguity, unavailable evidence, conflicting sources, tool failures, and adversarial inputs. A hand-balanced challenge set is useful for finding defects, but its overall score does not estimate production performance unless its sampling supports that interpretation.
+By the end, you should be able to:
 
-Give each case a stable ID, source, slice, expected behavior, and review status. Keep source document versions. Synthetic cases need human review: generated questions can be unrealistic or leak their answers through wording.
+1. Choose questions that cover different situations.
+2. Describe what a suitable answer should say without insisting on one exact sentence.
+3. Keep the question, expected behavior, and actual answer separate.
+4. Set aside a few fresh questions for a later check.
 
-A practical starting record is:
+## Scenario: customers ask more than opening hours
 
-```json
-{
-  "id": "Q-017",
-  "input": "What is the rollback threshold?",
-  "expected_behavior": "abstain",
-  "required_facts": [],
-  "relevant_document_ids": [],
-  "slice": "missing_evidence",
-  "risk": "high",
-  "source": "synthetic-human-reviewed"
-}
-```
+Maple Books has these facts:
 
-This expectation is conditional on a corpus that contains no threshold. If the corpus changes, review the case rather than blindly preserving its label.
+> - Open Monday to Saturday, 10 a.m. to 6 p.m.
+> - Closed on Sunday.
+> - Undamaged books can be returned within 14 days of purchase.
+> - A receipt is required.
+> - Delivery within Riverton takes three working days.
 
-## Lesson 3: Split discipline and labeling
+If every question asks about Sunday opening, the assistant could appear successful while handling returns poorly.
 
-Use development cases for iterative improvements and a separately held-out set for evaluation. Split related documents or near-duplicate questions together when needed to prevent leakage. A random row split can leave nearly identical cases on both sides.
+We also want to see what happens when the information is missing or the customer has not supplied enough detail.
 
-Have reviewers label independently before discussion. Disagreement may expose ambiguity in the policy, missing expertise, or unclear evidence. Preserve original labels and adjudication notes rather than replacing all disagreement with a single unexplained answer.
+## Lesson
 
-## Detailed tutorial: construct a dataset you can defend
+### 1. Begin with a purpose
 
-### 1. Start with the decision the evaluation will support
+For this small exercise, the purpose is:
 
-“Evaluate the assistant” is underspecified. Decide whether the experiment selects a prompt, compares retrieval, checks a release constraint, or investigates failure modes. The evaluation unit might be one question, one conversation, or one complete tool task. Changing that unit changes how you count successes and failures.
+> Find out whether the assistant answers shop-policy questions using the supplied information and explains what it cannot establish.
 
-For a QA knowledge assistant, define success as answering the question from authorized current documents, including material facts, citing supporting passages, and handling insufficient evidence appropriately. Now a case can encode those requirements rather than merely store a nice-looking answer.
+This purpose helps you decide which examples belong in the collection.
 
-Keep inference input separate from evaluator-only fields. The model gets the question and permitted context. The evaluator gets required facts, reference evidence, expected behavior, and constraints.
+A request for a poem about books might be interesting, but it does not tell you much about policy answers. Keep the first collection focused.
 
-### 2. Write an oracle as a set of obligations
+### 2. Choose several kinds of question
 
-Suppose an approved policy says: rollback begins after five consecutive failures and must be approved by the release lead. A reference answer might say “Roll back after five consecutive failures, with release-lead approval.”
+Start with these situations:
 
-A robust oracle can record two required facts, an approved source version, and a prohibition on inventing an exception. “Five failures in a row, approved by the release lead” is an acceptable alternative phrasing. Exact string matching would reject it unnecessarily.
+| Situation | Example | What you want to learn |
+|---|---|---|
+| Direct lookup | “Are you open on Sunday?” | Can it find a simple fact? |
+| Several conditions | “Can I return an undamaged book after ten days with a receipt?” | Does it apply the stated conditions? |
+| Missing information | “What does express delivery cost?” | Does it invent a price? |
+| Incomplete request | “Can I return my book?” | Does it explain conditions or ask for needed details? |
 
-If a policy is absent, the expected outcome changes. Record the corpus version that makes abstention correct. A future corpus update can legitimately invalidate the old label. Dataset maintenance needs domain judgment, just as test maintenance does after a requirements change.
+You may later hear people call these groups **slices**. It just means looking at a particular kind of example separately.
 
-### 3. Sampling: discovery sets and estimation sets
+Do not worry about that terminology now. The useful idea is to avoid asking the same easy question repeatedly.
 
-A challenge set deliberately emphasizes edge cases. It is excellent for defect discovery. A representative sample reflects a target workload and supports a different kind of conclusion. Do not average a manually balanced adversarial set and call its score an estimate of everyday user satisfaction.
+### 3. Write the expected behavior before collecting the reply
 
-You can keep both sets and report them separately. Define slices before running when possible: ordinary questions, missing evidence, version conflicts, ambiguous requests, and unauthorized access. Allow overlapping tags when needed; a single case can be both high risk and multilingual. Slice totals then need not add up to the overall case count.
+For the return question, you could record:
 
-Start small enough to review all labels. More synthetic rows do not compensate for incorrect expected behavior or copied near duplicates.
+> Say that the stated policy permits the return because the book is undamaged, ten days is within the window, and the customer has the receipt.
 
-### 4. Leakage occurs through relationships
+That is more useful than keeping one sentence the assistant must reproduce exactly.
 
-Imagine splitting 100 paraphrases of one policy question randomly. Both development and evaluation sets now contain almost the same task. The model or prompt developer can learn the policy-specific pattern from development examples. The evaluation looks more independent than it is.
+These two answers can both be acceptable:
 
-Group cases by the relationship that could leak: document family, incident, customer, template, or conversation. Keep each group in one split. This does not eliminate all leakage; it makes one important dependency explicit.
+> “Yes, those details meet the stated return conditions.”
 
-### 5. Runnable group-split example
+> “An undamaged book with a receipt can be returned within 14 days, so ten days fits the policy.”
 
-```python
-"""Module 04: group related evaluation cases without leakage."""
-from hashlib import sha256
+The expected meaning is the same.
 
-cases = [
-    {"id": "A-1", "family": "policy-A", "slice": "routine"},
-    {"id": "A-2", "family": "policy-A", "slice": "paraphrase"},
-    {"id": "B-1", "family": "policy-B", "slice": "missing_evidence"},
-    {"id": "C-1", "family": "policy-C", "slice": "routine"},
-    {"id": "D-1", "family": "policy-D", "slice": "conflict"},
-    {"id": "E-1", "family": "policy-E", "slice": "routine"},
-    {"id": "F-1", "family": "policy-F", "slice": "ambiguous"},
-]
+### 4. Include questions whose answer is unavailable
 
+A missing-information question is not a defective example.
 
-def split_groups(records):
-    groups = sorted(
-        {record["family"] for record in records},
-        key=lambda value: sha256(("course-split-v1:" + value).encode()).hexdigest(),
-    )
-    if len(groups) < 2:
-        raise ValueError("Need at least two independent groups")
-    held_out_groups = set(groups[:max(1, len(groups) // 3)])
-    development = [r for r in records if r["family"] not in held_out_groups]
-    held_out = [r for r in records if r["family"] in held_out_groups]
-    return development, held_out
+If you ask about express-delivery prices, the appropriate behavior is to say that the supplied information does not state them.
 
+Write that expectation explicitly. Otherwise, you may accidentally reward an invented answer because it appears complete.
 
-development, held_out = split_groups(cases)
-development_groups = {r["family"] for r in development}
-held_out_groups = {r["family"] for r in held_out}
-assert not development_groups & held_out_groups
-assert len(development) + len(held_out) == len(cases)
-assert len({r["id"] for r in cases}) == len(cases)
-print("Development IDs:", sorted(r["id"] for r in development))
-print("Held-out IDs:", sorted(r["id"] for r in held_out))
-print("No document family occurs in both splits.")
-```
+Also distinguish “not stated” from “definitely unavailable.” Our information does not prove that express delivery exists or that it cannot exist.
 
-Run [the saved example](../labs/module-examples/04_example.py). The salted hash gives a reproducible ordering for this fixed set of families. Selecting some complete families prevents the two policy-A paraphrases from being split apart.
+### 5. Record enough detail to understand a result
 
-The example is a small demonstration. It does not ensure slice balance or representative sampling, and adding new groups can change membership because the selection quota changes. For a real dataset, persist assigned split IDs in a versioned manifest and review changes. Never silently reshuffle a held-out set on each run.
+A useful first table contains:
 
-### 6. Build a labeling guide another reviewer can use
+- A short identifier, such as Q01.
+- The question.
+- The relevant shop facts.
+- What an acceptable reply should include.
+- The actual reply, once collected.
+- Your observation.
 
-A labeling guide should state the evidence hierarchy, labels, decision rules, alternative valid responses, treatment of missing information, and how to flag ambiguity. Include a straightforward pass, a straightforward fail, and a boundary case with a reasoned answer.
+An identifier helps you refer to the same example later even if you reorder the table.
 
-Ask two people to label independently before discussion. If one reviewer sees an authoritative source the other did not, the problem may be the review interface. If both see the same evidence but interpret “material claim” differently, improve the rubric. Preserve initial labels, adjudicated labels, and reasons.
+Keep actual replies unchanged. If you edit a poor reply to make it clearer, you lose the evidence of what happened.
 
-Do not resolve an ambiguous case solely because one model judge gives a confident answer. Expert adjudication should connect the expected behavior to requirements and evidence.
+### 6. Mark ambiguity rather than hiding it
 
-### 7. Guided dataset construction
+Suppose someone asks:
 
-Begin with ten questions you can answer manually from your corpus. For each, record the exact supporting passage and required facts. Add five genuinely unanswerable questions whose absence you verify. Add five questions where the wording leaves the desired version or workflow unclear.
+> “Will my order arrive by Wednesday?”
 
-Review the cases before any model run. Then identify groups, assign splits, and document counts. This sequence limits the temptation to relabel inconvenient failures after seeing predictions.
+We do not know when the order was placed. The phrase “working days” is also not defined further in our facts.
 
-Use the dataset-card template to record intended use, provenance, review status, grouping, limitations, and dates. A public repository should not contain customer incidents merely because they are convenient examples.
+Do not write a precise arrival date as the expected answer. A suitable reply should explain the general delivery time and ask for the missing details.
 
-### 8. Answer explanation for a disputed label
+If the policy itself is ambiguous, record the question that needs clarification from the shop. Do not make the assistant responsible for satisfying a rule nobody has defined.
 
-Question: “When do we roll back?” The corpus contains current policies for two products with different thresholds. A reference answer giving either threshold unconditionally is incomplete. Depending on product context, the desired behavior may be to ask which product or present both with explicit scope. The labeling guide must choose a policy and explain why.
+### 7. Keep some questions fresh
 
-If reviewers cannot agree on intended behavior, mark the case ambiguous rather than scoring the application against an arbitrary hidden rule. An explicit unresolved case is more useful than a fabricated ground truth.
+Use one group of examples while improving the prompt. Keep another small group aside until you are ready to check the revised version.
 
-Inspect dataset features in [Phoenix](https://github.com/Arize-ai/phoenix) after designing the underlying data contract. Tools store labels; they do not supply the missing judgment.
+The first group is often called a **development set**. The reserved group is a **held-out set**.
 
-## Lab
+You can begin with four practice questions and two reserved questions. Those numbers are teaching choices, not evidence that an application is reliable.
 
-Create 100 reviewed cases for the QA assistant. Define your own justified allocation across slices; do not claim that 100 cases proves reliability. Write a [dataset card](../templates/dataset-card.md) and [labeling guide](../templates/labeling-guidelines.md). Ask a second reviewer to label a subset, resolve disagreements, and identify near duplicates before splitting.
+If you inspect a reserved question and use it to revise the prompt, it is no longer a fresh check. Record that and reserve a different example for a later assessment.
 
-Keep reference labels out of the model's inference input. They belong to the evaluator.
+## Walkthrough: a six-question collection
 
-## Review and answers
+Here is a complete starting collection. Cover the expected-behavior column if you want to try writing it yourself.
 
-- **Is a reference answer always a complete oracle?** No; alternatives may satisfy the same requirements.
-- **Can synthetic cases be used directly?** They should be reviewed for realism, correctness, and leakage.
-- **What does repeated tuning on the test set do?** It reduces the independence of the performance estimate.
-- **What does disagreement tell you?** It can identify policy or task ambiguity, not merely reviewer error.
+| ID | Question | Expected behavior |
+|---|---|---|
+| Q01 | Are you open on Sunday? | Say the shop is closed. |
+| Q02 | Can I return an undamaged book after ten days with a receipt? | Say it fits the stated return conditions. |
+| Q03 | What does express delivery cost? | Say that express delivery and its price are not described. |
+| Q04 | Can I return my book? | Explain the three conditions or ask for the missing details. |
+| Q05 | What time do you close on Saturday? | Say 6 p.m. |
+| Q06 | Do you accept credit cards? | Say accepted payment methods are not specified. |
 
-## Exit evidence
+You could use Q01–Q04 while revising the prompt and reserve Q05–Q06 for a later check.
 
-Versioned cases, a split rationale, a dataset card, labeling instructions, and an adjudication example.
+For this lesson, all six are visible so you can understand the example. If you actually practice against all six, do not describe the last two as independently held out afterward.
 
-## Supplementary reading and attribution
+The value comes from the process: clear questions, clear expectations, and an honest record.
 
-Inspect dataset and test-generation concepts in [Ragas](https://github.com/vibrantlabsai/ragas) and dataset/experiment features in [Phoenix](https://github.com/Arize-ai/phoenix). The records and exercises here are independently written.
+## Try it yourself
+
+Add three new questions:
+
+1. A different wording of a known question.
+2. A question requiring two return conditions.
+3. A question the information cannot answer.
+
+For each, write the expected meaning and one claim the assistant must not invent.
+
+For example, “Could I visit this Sunday?” asks about the same fact as Q01. It adds wording variety, but it is not a completely different kind of task.
+
+## Assignment
+
+Create a collection of six to ten questions for your assistant idea.
+
+Identify a few questions you will use for improvement and a few you will reserve for a later check. Include at least one missing-information question and one incomplete request.
+
+Write a short note explaining where the facts came from. Our Maple Books facts are fictional, written for these lessons. If you choose another topic, use information you are allowed to share.
+
+## Knowledge check
+
+1. Why is a collection of only Sunday-opening questions limited?
+2. Must an acceptable answer match your preferred wording?
+3. Is “the information does not specify a price” an acceptable outcome?
+4. What changes when you use a reserved question to improve the prompt?
+5. What should you do when the reference policy is unclear?
+
+<details>
+<summary>Read the answers and explanations</summary>
+
+1. It covers only a narrow situation and tells you little about returns or missing information.
+2. No. Judge whether it expresses the required meaning and respects the facts.
+3. Yes, when the information really does not contain the price.
+4. That question becomes part of the evidence used during development. It is no longer an independent fresh check.
+5. Record the ambiguity and seek clarification rather than inventing a hidden rule.
+
+Possible new examples include asking for Friday opening hours, returning an undamaged book after seven days without stating whether a receipt is available, and asking about gift wrapping.
+
+</details>
+
+## What you learned
+
+You have moved from trying isolated questions to keeping a small, understandable collection. That collection makes later changes easier to assess.
+
+Continue when you can explain why each question is included and what its answer should establish.
+
+## Keep learning
+
+Continue to [Module 05: checking answers consistently](05-evaluation-harnesses.md).
+
+The [optional technical note](../advanced/04-datasets-and-oracles.md) covers larger datasets, labels, and record formats when you are ready. Dataset features in [Phoenix](https://github.com/Arize-ai/phoenix) are further reading, not a setup requirement.
+
+The teaching organization follows the approach described in [ATTRIBUTIONS.md](../ATTRIBUTIONS.md). This collection and its examples are original.

@@ -1,6 +1,6 @@
 # Runnable lesson examples
 
-These are optional technical examples. The current beginner Modules 01–03 do not require Python: their earlier code-heavy explanations are preserved in [advanced notes](../../advanced/README.md). Examples 04–12 remain in the later technical draft modules. The matching scripts in this directory use only the Python standard library. They make no network calls, require no credentials, and use original synthetic data.
+These are optional technical examples. The twelve main lessons have a written practice path. All earlier code-heavy explanations are preserved in [advanced notes](../../advanced/README.md). These scripts correspond to those notes. The matching scripts in this directory use only the Python standard library. They make no network calls, require no credentials, and use original synthetic data.
 
 ## Run
 

@@ -267,7 +267,7 @@ At this stage, success means explaining why your prompt is clearer and showing w
 
 ## Keep learning
 
-Pause here and review your three assignments. The next priority is to become comfortable explaining and using these ideas.
+Review your first three assignments. When the ideas feel familiar, continue to [Module 04: making a small question collection](04-datasets-and-oracles.md).
 
 Microsoft's [Prompt Engineering Fundamentals](https://github.com/microsoft/generative-ai-for-beginners/blob/main/04-prompt-engineering-fundamentals/README.md) provides further practice. Its progression through explanations, examples, assignment, and knowledge check inspired this lesson's organization. The prompt, shop facts, exercises, and answer explanations here are original.
 

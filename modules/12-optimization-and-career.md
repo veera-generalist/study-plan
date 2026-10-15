@@ -1,167 +1,247 @@
-# Module 12 — Optimization, capstone, and career evidence
+# Module 12 — Bring it together in a small project
 
-[Course index](../README.md) · Weeks 23–24 · Prerequisites: Modules 01–11
+[Previous: investigating failures](11-observability-and-delivery.md) · [Course home](../README.md)
 
-**Terms to know:** [Baseline](../GLOSSARY.md#baseline) · [Overfitting](../GLOSSARY.md#overfitting) · [Tradeoff frontier](../GLOSSARY.md#tradeoff-frontier) · [Fine-tuning](../GLOSSARY.md#fine-tuning) · [Practical significance](../GLOSSARY.md#practical-significance) · [Cost per successful task](../GLOSSARY.md#cost-per-successful-task)
+**Before you begin:** bring the notes and examples you made in earlier lessons. You can complete a written project first and add Python when ready.
 
-## Outcomes
+## Introduction
 
-Improve one component with controlled evidence and present your engineering judgment clearly.
+You have worked through the main parts of a small AI application:
 
-## Lesson 1: Optimize against trustworthy measurements
+- Give it a clear purpose.
+- Supply relevant information.
+- Write useful instructions.
+- Collect questions.
+- Check answers.
+- Compare a change.
+- Understand tools and difficult situations.
+- Investigate a failure.
 
-Build a baseline before optimizing. Candidate changes include a different prompt, model, retrieval strategy, reranker, cache, or workflow. Changing all of them at once makes causal interpretation difficult.
+Now combine those ideas into one project you can explain from beginning to end.
 
-Optimize on development data. Keep held-out evidence independent of repeated selection. A larger model may improve difficult answers while increasing cost and latency; a smaller model may be sufficient for extraction. Compare task-specific outcomes rather than selecting by general reputation.
+A small, honest project with clear evidence is a good starting point. It does not need every framework or technique you have heard about.
 
-Fine-tuning changes weights and needs suitable examples, consent/provenance, and independent evaluation. Retrieval tuning is appropriate when evidence is missed. Prompt optimization is appropriate when instructions or examples are inadequate. Fix the diagnosed cause.
+## Learning objectives
 
-## Lesson 2: Avoid optimizing the proxy at the user's expense
+By the end, you should be able to:
 
-A metric is a proxy for desired behavior. If it rewards length, the system can become verbose. If it rewards any citation, it can cite irrelevant sources. Add counterexamples and human review where these incentives matter.
+1. Define a project small enough to complete.
+2. Keep a starting version and one evaluated improvement.
+3. Present successful and unsuccessful examples.
+4. Distinguish a written prototype from a working implementation.
+5. Choose a realistic next programming step.
 
-Track quality, critical failures, latency, and cost together. Preserve configurations on the useful tradeoff frontier rather than declaring one winner without operating requirements.
+## Scenario: your Maple Books assistant
 
-Inspect [DSPy](https://github.com/stanfordnlp/dspy) after you can explain your metric and dataset. Automated optimization increases the importance of independent evaluation; it does not replace it.
+Your project is:
 
-## Lesson 3: Present a senior engineer's evidence
+> Help customers understand the supplied shop policies, answer supported questions, and explain missing information.
 
-Your portfolio should show architectural reasoning, coverage choices, measurement limits, diagnosis, and release judgment. Keep claims factual. Say what the project demonstrates, how it was measured, and what remains unresolved.
+Start with answering questions. The draft-saving workflow is an optional extension, not a requirement for the first version.
 
-An honest project description might be: “Built a synthetic QA-document assistant; evaluated retrieval and answer quality separately; found a version-selection failure; compared a metadata filter with the baseline on held-out questions.” Add numbers only from recorded runs.
+You can use another domain if you have clear, reusable source information. Keep its facts small enough to check carefully.
 
-Do not imply professional AI deployment experience solely from a course project. Combine your existing QA leadership experience with new, inspectable AI engineering artifacts.
+## Lesson
 
-## Detailed tutorial: optimize with evidence and present your judgment
+### 1. Define who it helps and what it does
 
-### 1. Diagnose before choosing a technique
+Write a short problem statement.
 
-A wrong answer can result from unavailable evidence, failed parsing, poor retrieval, unclear instructions, model limitations, tool errors, or a faulty grader. Each calls for a different intervention.
+For example:
 
-If the authoritative document was never ingested, fine-tuning is not the first fix. If retrieval consistently misses exact error codes, lexical or hybrid search may help. If the model has evidence but omits required facts, improve instructions, examples, or model choice and measure the result. If the judge is wrong, fix the measurement before optimizing the application against it.
+> Customers ask recurring questions about opening hours, returns, and delivery. The assistant uses approved shop information to give short, understandable answers.
 
-Write a hypothesis linking the intervention to an observed failure. “Add a reranker because relevant passages are present in the candidate set but ranked too low” is testable. “Use the latest framework” does not identify a cause.
+Then state the boundary:
 
-### 2. Control the experiment
+> It does not approve refunds, invent delivery services, or claim access to live stock information.
 
-Preserve the baseline configuration. State the one major change, development dataset, metrics, critical constraints, operational budget, and expected practical benefit. Use development data for iteration and reserve independent evidence for the chosen candidate.
+This describes the actual intended product. It also helps choose relevant questions.
 
-If a change combines a new prompt and new model, you can evaluate the whole package, but attributing improvement to one component requires additional comparisons. Make that limitation clear.
+### 2. Preserve the starting version
 
-Record unsuccessful experiments too. They explain what did not help and reduce repeated work. A portfolio containing only wins can conceal weak experimental discipline.
+Keep the source facts, prompt, question collection, and replies from the first version.
 
-### 3. Optimization techniques and prerequisites
+Call this version A.
 
-Prompt optimization searches instructions or examples against a metric. It requires a meaningful metric and protected evaluation data. Retrieval tuning changes parsing, chunking, ranking, filtering, or reranking. It requires relevance evidence and component diagnostics.
+If you later improve the prompt, you will have a dependable reference. Without it, the comparison may rely on memory or a particularly memorable answer.
 
-Fine-tuning updates parameters. It needs suitable, permitted training data, an independently evaluated baseline, and a plan for overfitting and deployment. It may help stable task behavior, but it does not turn model memory into an always-current authorized database.
+When you use a live tool, preserve actual replies and the available tool/model information. When you use authored examples, label them accordingly.
 
-Caching and batching improve operating efficiency under the right conditions. A cache must respect content version, prompt/model configuration, user scope, and task-specific validity. An invalid cache can be fast and inexpensive while returning the wrong or unauthorized answer.
+### 3. Choose one observed problem
 
-### 4. Multi-objective decisions
+Suppose A repeatedly invents services when information is absent.
 
-Quality, cost, and latency are often in tension. One configuration dominates another when it is no worse in all considered objectives and strictly better in at least one. Non-dominated candidates form a tradeoff frontier.
+A focused improvement might strengthen the missing-information instruction and add a valid demonstration.
 
-First apply mandatory constraints such as no known approval bypasses. Then compare eligible candidates. A frontier does not select the deployment automatically; operating requirements and uncertainty still matter.
+Write:
 
-### 5. Runnable tradeoff example
+> I expect B to avoid unsupported service claims more consistently.
 
-```python
-"""Module 12: choose among synthetic measured tradeoffs without one magic score."""
-candidates = [
-    {"name": "baseline", "quality": 0.90, "cost": 0.02, "latency_ms": 600,
-     "critical_failures": 0},
-    {"name": "larger-model", "quality": 0.95, "cost": 0.08, "latency_ms": 1000,
-     "critical_failures": 0},
-    {"name": "retrieval-fix", "quality": 0.93, "cost": 0.02, "latency_ms": 650,
-     "critical_failures": 0},
-    {"name": "bad-cache", "quality": 0.94, "cost": 0.01, "latency_ms": 200,
-     "critical_failures": 1},
-    {"name": "slower-copy", "quality": 0.90, "cost": 0.03, "latency_ms": 800,
-     "critical_failures": 0},
-]
+Do not change every part of the application at once. A focused change is easier to interpret.
 
+If the wrong document is being supplied, fix that step instead of only adjusting answer style.
 
-def dominates(left, right):
-    no_worse = (
-        left["quality"] >= right["quality"]
-        and left["cost"] <= right["cost"]
-        and left["latency_ms"] <= right["latency_ms"]
-    )
-    strictly_better = (
-        left["quality"] > right["quality"]
-        or left["cost"] < right["cost"]
-        or left["latency_ms"] < right["latency_ms"]
-    )
-    return no_worse and strictly_better
+### 4. Compare and explain
 
+Use your development questions and the same review rules.
 
-eligible = [row for row in candidates if row["critical_failures"] == 0]
-frontier = [
-    row for row in eligible
-    if not any(dominates(other, row) for other in eligible)
-]
-names = {row["name"] for row in frontier}
-assert names == {"baseline", "larger-model", "retrieval-fix"}
-assert "bad-cache" not in names
-print("Eligible tradeoff frontier:", sorted(names))
-print("Choose from it using operating requirements and independent evidence.")
-```
+Keep the paired outcomes, including regressions. Select a candidate before using reserved questions for a fresh assessment.
 
-Run [the saved example](../labs/module-examples/12_example.py). The unsafe cache is excluded by a critical constraint. The slower copy is dominated. Baseline, larger model, and retrieval fix remain because each has some tradeoff.
+Describe the result within its limits:
 
-All numbers are synthetic demonstration inputs. The code does not estimate uncertainty, validate grader quality, or prove practical significance. In a real experiment, close quality differences may not justify treating one point as clearly superior.
+> B handled two missing-information cases better in my small exercise, but one closing-time answer regressed.
 
-### 6. Resist metric gaming
+That is more useful than claiming “The assistant is accurate” without explaining the evidence.
 
-If a grader rewards citations without checking support, optimization may teach the system to add irrelevant citations. If it rewards answer length, outputs can become verbose. If it ignores abstention, a system can appear accurate by refusing difficult tasks.
+### 5. Improve what matters for the task
 
-Add counterexamples and independent review where proxy weaknesses matter. Track coverage, critical failures, and user-task completion. Do not keep adding ad hoc rules solely to preserve a flattering score; revise the evaluation design when it no longer matches the intended behavior.
+A longer answer is not automatically better. A more expensive model is not automatically necessary. A faster response is not useful if it promises the wrong policy.
 
-Automated optimization with a framework such as DSPy increases the value of clean splits. Repeated search can discover ways to score well on development data that do not generalize.
+Choose improvements based on observed needs.
 
-### 7. Build the capstone as an evidence narrative
+Possible next steps include clearer instructions, better source selection, a more suitable model, or an application control around a write action.
 
-Your capstone should answer five questions: What problem mattered? What did the baseline do? Which failures did you find? What change addressed a cause? What evidence supports the final recommendation?
+You can eventually compare quality, time, and cost together. For this first project, explain the tradeoff you actually observed rather than manufacturing measurements.
 
-A useful demonstration walks through one successful case and one informative failure. Show the source passage, model output, tool state, and grader result. Explain what is known and what remains uncertain. Avoid claiming production readiness because a small synthetic set passes.
+### 6. Describe the project at the right level
 
-Use the release-report template, dataset card, labeling guide, experiment record, and trace evidence. Reproducibility means another person can follow the setup and understand the artifacts, even if an external model later changes.
+A **written prototype** describes prompts, examples, expected behavior, and review results.
 
-### 8. Position your experience honestly
+A **working implementation** runs the relevant application steps in software.
 
-Your existing seniority in QA gives you practice in risk, architecture review, triage, test strategy, and stakeholder decisions. Add concrete AI evidence rather than presenting yourself as a beginner in all engineering.
+A **live-model experiment** includes actual model requests and recorded responses.
 
-A factual project statement might say: “Implemented a synthetic release-policy assistant, separated retrieval and generation metrics, identified a version-filtering defect, and compared a fix on held-out questions.” Add counts and improvements only from stored runs.
+These can all be useful learning artifacts. They demonstrate different things.
 
-Distinguish course projects from production deployment experience. For engineering roles, emphasize the application and controls you built. For evaluation roles, emphasize dataset design, grader validation, failure taxonomy, uncertainty, and decision quality.
+If you manually chose each document and pasted it into a chat tool, you have practiced the document-answering process. Do not claim to have built automated retrieval.
 
-### 9. Guided presentation and answer reasoning
+If you did not connect a real order system, say the tool workflow was simulated.
 
-Prepare a five-minute demo and a ten-minute design review. Expect questions about why you chose a dataset, how you validated a judge, what could invalidate the score, and how you would monitor the system after release.
+### 7. Choose a gentle Python next step
 
-If asked why a candidate with the highest score was rejected, show the critical constraint or the cost/latency requirement. If asked whether the model is reliable, answer within the measured task, dataset, and operating conditions rather than making a general claim.
+Python remains the language for implementation in this course.
 
-Finish by naming the next experiment you would run and why. That demonstrates an evidence-based development process, not merely completion of a tutorial.
+Start by automating something you already understand:
 
-Study [DSPy](https://github.com/stanfordnlp/dspy) for optimization and [LM Evaluation Harness](https://github.com/EleutherAI/lm-evaluation-harness) for a distinct model-benchmarking route. This tradeoff example is original.
+1. Store a few questions and reviewed outcomes.
+2. Print a simple summary, like the optional example in Module 05.
+3. Read the records from a file.
+4. Add a small model adapter when the data flow is clear.
+5. Keep request failures separate from valid but wrong answers.
 
-## Lab — capstone
+You do not need to jump immediately into complex frameworks.
 
-Choose one [project brief](../projects/README.md) or combine them. Freeze a baseline and evaluation plan. Improve one component, measure the result, inspect regressions, and write a release recommendation. Prepare a five-minute demonstration and a ten-minute technical walkthrough.
+The optional local-model lab is one later adapter example. It needs separate setup, and its tests use simulated service responses. A real inference run still needs your chosen model environment.
 
-## Review and answers — interview practice
+### 8. Present a failure as part of the work
 
-- **How do you test a nondeterministic system?** Separate deterministic software checks from repeated behavioral evaluation, define datasets and rubrics, and report uncertainty.
-- **How do you diagnose a RAG failure?** Inspect source availability, parsing, retrieval, evidence selection, generation, and grading in order.
-- **When do you trust a judge?** After validating it on independently reviewed examples for the intended criteria and slices, with known limits.
-- **How do you choose a release gate?** Connect risk and product requirements to reliable measurements, critical constraints, and an explicit error policy.
-- **What failed in your project?** Show a real case, its root cause, the attempted fix, and measured consequences.
+Choose one informative failure and show:
 
-## Exit evidence
+- The question.
+- The source information.
+- The reply or action.
+- The rule it failed.
+- Your likely explanation.
+- The change you tried or would try.
 
-A reproducible repository, dataset card, evaluated baseline, controlled experiment, reviewed failures, release report, and clear demonstration.
+A failure is valuable when it reveals engineering judgment. Hiding every weak example makes the project harder to assess.
 
-## Supplementary reading and attribution
+### 9. Connect evidence to your career direction
 
-For deeper model benchmarking, inspect [LM Evaluation Harness](https://github.com/EleutherAI/lm-evaluation-harness). Model benchmark scores do not automatically establish quality for your application. For production context, revisit [Made With ML](https://github.com/GokuMohandas/Made-With-ML).
+For AI engineering, show the components you built and how they work together.
+
+For evaluation engineering, show how you chose examples, defined expected behavior, reviewed outcomes, and interpreted a change.
+
+A project can demonstrate both. State which parts you implemented and which remain planned.
+
+Your project description should report actual work. Add numerical results only when you have stored records that support them.
+
+## Walkthrough: a simple project report
+
+Here is a report outline using invented teaching outcomes:
+
+> **Purpose:** Answer questions about the supplied Maple Books policies.
+>
+> **Starting point:** Prompt A plus the three approved shop documents.
+>
+> **Observed issue:** Some missing-information questions produced invented service details.
+>
+> **Change:** Prompt B explicitly states how to handle missing information.
+>
+> **Development result:** B fixes two examples and breaks one previously correct example.
+>
+> **Decision:** Investigate the regression before selecting B.
+>
+> **Next evidence needed:** A revised candidate, a repeated comparison, and fresh questions after selection.
+
+This outline makes the work understandable without requiring a dashboard.
+
+In your own report, replace the teaching outcomes with what you actually observed. If the project is written-only, state that prominently.
+
+## Try it yourself
+
+Prepare a two-minute explanation of your project:
+
+1. What does it help someone do?
+2. What information does it use?
+3. What did you check?
+4. What went wrong?
+5. What is your next step?
+
+Try explaining it without unexplained acronyms. If a sentence depends on a term you cannot explain, return to the relevant lesson.
+
+## Assignment
+
+Create a small project folder or document containing:
+
+- The problem and scope.
+- The source facts and their origin.
+- Prompt A and one revised prompt.
+- A small question collection and review rules.
+- Actual replies or clearly labeled supplied examples.
+- A paired comparison.
+- One failure analysis.
+- A short recommendation and limitations.
+
+A collection of about ten carefully reviewed questions is a useful learning target, not a guarantee of reliability. Start smaller if necessary.
+
+Choose either a written prototype or a working implementation. Label it accurately. Add the simulated draft workflow only if the question-answering part is understandable and complete enough for your learning goal.
+
+## Knowledge check
+
+1. Why preserve a starting version?
+2. Should you fix every component at once?
+3. Does manually pasting documents establish automated retrieval?
+4. What should a portfolio claim say about a simulated tool?
+5. What is a sensible first Python step?
+
+<details>
+<summary>Read the answers and explanations</summary>
+
+1. It gives you evidence for a comparison rather than relying on memory.
+2. Usually start with a focused change tied to an observed problem.
+3. No. It demonstrates the manual process, not an automated implementation.
+4. State that it was simulated and describe what was actually checked.
+5. Automate a familiar, small operation such as storing examples and counting reviewed outcomes.
+
+For the presentation activity, a clear description should separate completed work, observed results, and planned next steps.
+
+</details>
+
+## What you learned
+
+You now have a path from an assistant idea to a small project with reviewable evidence.
+
+The next step is to deepen implementation at a comfortable pace while keeping the same habits: clear purpose, suitable information, explicit checks, visible failures, and honest conclusions.
+
+Completing the introductory lessons builds understanding. Professional readiness also requires continued programming practice and experience with working systems.
+
+## Keep learning
+
+Choose a [project brief](../projects/README.md) when you want a larger implementation task.
+
+For coding, return to [the optional Python note](../advanced/01-python-engineering.md) and the [local-model adapter lab](../labs/live-model/README.md) when their prerequisites make sense.
+
+The [optional technical note for this lesson](../advanced/12-optimization-and-career.md) explores optimization and more formal portfolio evidence. [DSPy](https://github.com/stanfordnlp/dspy) is later reading after you have trustworthy evaluation examples.
+
+The project narrative, report outline, and activities here are original; see [attributions](../ATTRIBUTIONS.md).

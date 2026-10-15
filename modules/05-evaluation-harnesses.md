@@ -1,172 +1,230 @@
-# Module 05 — Metrics, graders, and evaluation harnesses
+# Module 05 — Check answers consistently
 
-[Course index](../README.md) · Weeks 9–10 · Prerequisite: Module 04
+[Previous: collecting questions](04-datasets-and-oracles.md) · [Course home](../README.md) · [Next: getting help with review](06-judges-and-human-review.md)
 
-**Terms to know:** [Evaluation harness](../GLOSSARY.md#evaluation-harness) · [Grader](../GLOSSARY.md#grader) · [Deterministic grader](../GLOSSARY.md#deterministic-grader) · [Semantic grader](../GLOSSARY.md#semantic-grader) · [Coverage](../GLOSSARY.md#coverage) · [Metric](../GLOSSARY.md#metric)
+**Before you begin:** bring a few questions and expected answers from Module 04. You can work on paper.
 
-## Outcomes
+## Introduction
 
-Run reproducible evaluations that preserve raw evidence and distinguish model failures from invalid measurements.
+You ask the assistant a question, read its reply, and decide it “looks good.”
 
-## Lesson 1: Choose a grader for each requirement
+That is a starting impression. To compare answers fairly, you need to say what “good” means.
 
-A deterministic grader checks a precisely defined condition: schema validity, an exact label, a numeric tolerance, a known identifier, or a database state. A semantic grader assesses meaning: whether evidence supports a claim or whether a response addresses the question.
+In this lesson, you will write a few simple checking rules and apply them to actual sentences. You will then summarize what you found without losing the important details.
 
-Use each where appropriate. Substring checks are cheap but fragile: “the threshold is not five” contains “five.” Embedding similarity can reward a topically related contradiction. A model judge can interpret meaning but adds its own errors, cost, and variation.
+## Learning objectives
 
-Define whether each criterion is mandatory or advisory. A weighted average can hide a critical permission violation behind good formatting and helpful tone.
+By the end, you should be able to:
 
-## Lesson 2: Execution and measurement are separate
+1. Turn “good answer” into clear questions you can check.
+2. Distinguish a wrong answer from an unanswered or unclear measurement.
+3. Summarize a small review using counts.
+4. Explain why one total score cannot tell the whole story.
 
-A harness loads cases, invokes the application, records outputs, runs graders, and aggregates results. It also needs case IDs, versioned configuration, explicit error states, and an understandable denominator.
+## Scenario: an answer can sound helpful and still be wrong
 
-Keep at least these concepts distinct:
+The customer asks:
 
-- Application returned an unacceptable answer.
-- Application failed to execute.
-- Grader could not produce a valid measurement.
-- Dataset case is invalid.
+> Can I return an undamaged book after ten days if I have the receipt?
 
-Report unknown measurements explicitly. For example, 80 passes, 15 failures, and 5 grading errors is not an 80/95 success claim without qualification. You might report 80/100 confirmed passes and a separate 5% grading-error rate.
+The assistant replies:
 
-## Lesson 3: Reports should support decisions
+> Absolutely! You have 30 days to return it, and we will refund your payment immediately.
 
-Report by slice as well as overall. Save raw outputs and per-criterion results so a reviewer can challenge a score. Include application commit, prompt version, model settings, dataset hash, and grader version.
+The tone is friendly. The 30-day window contradicts the policy, and immediate payment is not specified.
 
-Repeat executions when variability matters. Identical stored responses are useful for testing the harness; they do not measure live model variability.
+A single impression of helpfulness could miss those problems. We need more specific checks.
 
-## Worked example
+## Lesson
 
-Two versions both pass 90% overall. Version B improves easy formatting cases but loses two high-risk abstention cases. Aggregate equality does not establish equivalent quality. Review the loss severity and intended operating context.
+### 1. Decide what you are checking
 
-## Detailed tutorial: build a trustworthy measurement pipeline
+Start with three questions:
 
-### 1. Separate the system under test from the evaluator
+1. Does the reply answer the customer's question?
+2. Are its factual claims supported by the shop information?
+3. Does it include the conditions needed for that answer?
 
-An application receives a task and produces an output or side effect. The harness controls execution and records what happened. Graders interpret the evidence. Aggregation summarizes judgments. A defect in any layer can create a misleading quality claim.
+These are checking criteria. A written set of criteria is often called a **rubric**.
 
-Use a stored-output mode to debug graders without paying for another generation run. Use a live-execution mode to evaluate the application. Give each its own run metadata. Regrading a stored answer under a new rubric is not a new application trial.
+For a customer-facing reply, you can also check clarity. Keep that separate from factual correctness so pleasant wording does not hide a wrong claim.
 
-For a model integration, save the actual normalized response and relevant provider metadata before grading. If your grader unexpectedly fails, the raw answer remains available for investigation.
+### 2. Make the rules observable
 
-### 2. Map every requirement to a measurement
+“Be accurate” is too broad to explain a decision.
 
-A requirement like “return one of three severity labels” maps to a set-membership check. “Never create a ticket without approval” maps to approval/state evidence. “Answer using only supplied sources” maps to claim-support evaluation, not merely checking for bracketed numbers.
+A more useful rule is:
 
-Write down each grader's input, output range, invalid-input behavior, and known blind spots. A substring check can pass “not five failures.” A similarity check can reward a contradiction. A model judge can miss an unsupported statement. There is no universal grader; combine suitable evidence.
+> A return-policy answer must preserve the 14-day limit, the undamaged-book condition, and the receipt requirement when those conditions are relevant to the question.
 
-Treat critical constraints as separate gates. A weighted average of helpfulness, formatting, and authorization could let perfect style compensate for an unauthorized write. That is the wrong aggregation for a mandatory constraint.
+This tells another reviewer what to look for.
 
-### 3. Design statuses before calculating averages
+You do not need every answer to repeat every shop fact. A question about Saturday closing time does not need a paragraph about returns.
 
-Choose explicit statuses such as pass, fail, application_error, grader_error, and invalid_case. The last often belongs in dataset validation before execution. An application timeout is evidence of task noncompletion. A grader timeout means the application result was not measured by that grader.
+Judge completeness in relation to the actual question.
 
-Different reports can present different useful denominators. The important part is to name them:
+### 3. Choose clear review outcomes
 
-- Confirmed passes divided by all scheduled valid cases.
-- Passes divided by successfully judged cases.
-- Successfully judged cases divided by all scheduled valid cases.
-- Application and grading error rates.
+For each answer, record one of these:
 
-Do not call all of these “accuracy.” A candidate can appear better if a grader fails disproportionately on its hardest outputs.
+| Outcome | Meaning |
+|---|---|
+| Meets the requirements | You checked the answer and the required conditions are satisfied. |
+| Does not meet the requirements | You found a specific wrong, missing, or unsupported part. |
+| Needs clarification or review | You cannot make a dependable judgment because the reference, question, or criterion is unclear. |
 
-### 4. Runnable reporting example
+If the application never produced an answer because a request failed, record that separately. You did not observe a satisfactory customer reply.
 
-```python
-"""Module 05: explicit statuses, denominators, and conservative gates."""
-from collections import Counter
+If a review tool failed, record that separately too. A missing judgment is not evidence of a correct answer.
 
-outcomes = [
-    {"id": "1", "status": "pass"},
-    {"id": "2", "status": "pass"},
-    {"id": "3", "status": "fail"},
-    {"id": "4", "status": "application_error"},
-    {"id": "5", "status": "grader_error"},
-]
-ALLOWED = {"pass", "fail", "application_error", "grader_error"}
+You do not need complicated software to keep those distinctions.
 
+### 4. Separate exact checks from checks of meaning
 
-def summarize(rows):
-    if not rows:
-        raise ValueError("No evaluation outcomes")
-    if len({row["id"] for row in rows}) != len(rows):
-        raise ValueError("Duplicate case IDs")
-    if any(row["status"] not in ALLOWED for row in rows):
-        raise ValueError("Unknown outcome status")
-    counts = Counter(row["status"] for row in rows)
-    judged = counts["pass"] + counts["fail"]
-    total = len(rows)
-    return {
-        "total": total,
-        "counts": dict(counts),
-        "confirmed_pass_rate": counts["pass"] / total,
-        "judged_pass_rate": counts["pass"] / judged if judged else None,
-        "measurement_coverage": judged / total,
-        "release_gate": counts["grader_error"] == 0
-            and counts["application_error"] == 0
-            and counts["pass"] == total,
-    }
+Some things are straightforward to check:
 
+- Did a reply exist?
+- Did it exceed a requested length?
+- Did it name an allowed category?
 
-report = summarize(outcomes)
-assert report["confirmed_pass_rate"] == 0.4
-assert report["measurement_coverage"] == 0.6
-assert abs(report["judged_pass_rate"] - 2/3) < 1e-12
-assert report["release_gate"] is False
-print(report)
-```
+Other things require reading meaning:
 
-Run [the saved example](../labs/module-examples/05_example.py). It reports two confirmed passes among five cases: 40%. Among the three cases that received pass/fail judgments, two passed: about 66.7%. Measurement coverage is 60%. Neither rate alone describes the full run.
+- Does the answer preserve the return conditions?
+- Does it imply a service the facts do not establish?
+- Does it answer the actual question?
 
-The demonstration uses a deliberately strict gate requiring all cases to pass and no errors. This is an educational policy, not a universal release standard. Your production gate must reflect risk, task criticality, and measurement reliability.
+For example, checking whether “14” appears is not enough. “Returns are not allowed within 14 days” contains the number but changes the policy.
 
-### 5. Understand aggregation from first principles
+Later, software can automate exact checks and help with meaning-based review. First, understand what each check establishes.
 
-Suppose slice A has 90 cases and slice B has 10. Averaging their two pass rates gives them equal weight. Pooling all cases gives A nine times the influence. Either can be appropriate for a declared purpose, but they answer different questions.
+### 5. Start with counts you can explain
 
-Keep both overall counts and slice counts. For overlapping tags, a case may contribute to several slice summaries. Do not add those summaries to reconstruct total cases.
+Suppose you review six answers and four meet your requirements.
 
-For multi-criterion results, decide whether passing requires all mandatory criteria, an allowed score range, or reviewed exceptions. Record criterion-level scores so a reviewer can see why a case failed.
+Write:
 
-### 6. Walk through the included evaluator
+> Four of six answers met the requirements in this small exercise.
 
-Open the existing offline evaluator and follow this path: read_jsonl, validate_case, evaluate, grade, summarize slices, then write the report. Notice that duplicate IDs and coverage mismatches are rejected before aggregation. A prediction cannot disappear silently.
+Then describe the other two. Were they wrong about Sunday opening? Did they invent a delivery service?
 
-The fixture's source check only establishes that IDs are allowed. It does not determine whether a document supports prose. Preserve that limitation when describing the lab in a portfolio. An impressive-looking number measured against a weak contract remains weak evidence.
+A percentage is simply another way to express the count. Four out of six is about 67%. It is not a statement that the assistant is 67% reliable for every future use.
 
-### 7. Guided experiment and solution reasoning
+The questions you selected and the way you reviewed them affect what the result means.
 
-Make the grader unavailable for a known failing case. A naive script that drops grading errors may improve its reported judged-case pass rate. The correct interpretation is reduced measurement coverage, not improved application behavior.
+### 6. Look at different kinds of question
 
-Next, add a new perfectly passing routine case. The overall rate increases, but the missing-evidence slice does not improve. This demonstrates why dataset composition changes must be recorded when comparing runs.
+Imagine all four successful answers were simple opening-hours questions and both unsuccessful answers involved missing information.
 
-Finally, store a per-case criterion dictionary and write a table of failed criterion names. A useful error report should let you jump directly to the evidence, not only display a single red percentage.
+The total count hides an important pattern.
 
-### 8. Framework adoption after the contract is clear
+Write the pattern down:
 
-When you adopt DeepEval or Promptfoo, map your concepts into the framework: test cases, metrics/assertions, configuration, runs, and reports. Do not assume a built-in metric shares your business definition because its name sounds right. Read its required inputs and implementation or documentation.
+> The assistant handled direct opening-hours questions but invented details when information was absent.
 
-Keep deterministic unit tests for the harness itself. An evaluation system can regress: a denominator bug, ID join error, or unhandled judge result can approve a broken application.
+That observation suggests a specific improvement. Adding more easy questions would raise the overall score without solving that weakness.
 
-Use the current [DeepEval repository](https://github.com/confident-ai/deepeval) and [Promptfoo repository](https://github.com/promptfoo/promptfoo) for integration study. The report logic above is original and independent of those frameworks.
+### 7. Keep the original answer and your reason
 
-## Lab
+A useful review record includes:
 
-Run the [offline evaluator](../labs/offline-evaluation/README.md), read every case result, and compare it with the stored predictions. It deliberately contains failures and therefore exits with a nonzero status by default. Its report is an educational contract check, not a semantic LLM benchmark.
+- The question.
+- The unchanged answer.
+- The relevant facts.
+- The outcome.
+- A brief reason.
 
-Extend it with a new slice or a numeric constraint. Then use the [optional local-model adapter](../labs/live-model/README.md) as a starting point for a separate live adapter in your project. Its component-label schema differs from the stored evaluator fixture; normalize records explicitly rather than treating them as interchangeable. Ensure an API error cannot be turned into a pass. Use the [report template](../templates/evaluation-report.md).
+A reason such as “Invented a same-day service not described in the information” is more useful than “Bad answer.”
 
-## Review and answers
+Someone else should be able to understand and challenge your decision.
 
-- **Why store raw outputs?** To audit scores and regrade without another model call.
-- **Why report grader errors separately?** Missing measurement is different from known application behavior.
-- **Should all criteria be averaged?** No; mandatory safety or correctness requirements can require individual gates.
-- **Is repeated grading of stored output a live-model stability test?** No; it evaluates the grader or harness, not repeated generation.
+## Walkthrough: review four replies
 
-## Exit evidence
+Use the original Maple Books facts.
 
-A reproducible run, per-case and slice results, explicit error policy, and an explained failing case.
+| Question | Illustrative reply | Review |
+|---|---|---|
+| Are you open on Sunday? | “No, we are closed on Sunday.” | Meets the requirement. |
+| What does express delivery cost? | “Express delivery costs five pounds.” | Does not meet the requirement; the service and price are not stated. |
+| Can I return an undamaged book after ten days with a receipt? | “Yes, those details meet the 14-day return policy.” | Meets the requirement. |
+| Which days count as working days for delivery? | “Saturday counts as a working day.” | The claim is not supported by the information. |
 
-## Supplementary reading and attribution
+The last reply should not receive a pass just because Saturday opening is specified. Shop opening days do not establish the delivery company's working-day calendar.
 
-Study [DeepEval](https://github.com/confident-ai/deepeval) for Python evaluation workflows and [Promptfoo](https://github.com/promptfoo/promptfoo) for configured comparisons. No framework source is copied into the included lab.
+A suitable answer would explain that delivery takes three working days and that the supplied information does not define which days count.
+
+In these four authored examples, two meet the requirements. The exercise reveals a problem with invented details, not a complete estimate of real-model quality.
+
+## Try it yourself
+
+Review these replies:
+
+1. Question: “When do you close on Friday?” Reply: “At 6 p.m.”
+2. Question: “Do you gift-wrap purchases?” Reply: “Yes, every purchase is gift-wrapped free.”
+3. Question: “Can I return my book?” Reply: “Returns are allowed within 14 days.”
+
+Write an outcome and reason for each.
+
+For the third reply, consider whether the missing condition and receipt requirement matter. A general question about eligibility needs more than the time limit alone.
+
+## Optional: let Python count reviewed answers
+
+The decisions still come from your review. This short program only counts them.
+
+~~~python
+results = ["meets", "does not meet", "meets", "does not meet"]
+
+meets_count = results.count("meets")
+total_count = len(results)
+
+print("Answers meeting the requirements:", meets_count)
+print("Answers reviewed:", total_count)
+~~~
+
+The first line stores four outcomes. The next lines count the successful outcomes and the total. The last two lines display 2 and 4.
+
+This program does not read answers, determine truth, or call a model. It illustrates how a little code can help once you understand the job.
+
+You can skip it and complete the lesson manually. A saved copy is in [the optional beginner example](../labs/beginner/05_count_answers.py).
+
+## Assignment
+
+Write three checking rules for your assistant. Review five replies using those rules.
+
+Include at least one reply that sounds convincing but adds an unsupported claim. Save the replies and write one sentence explaining each outcome.
+
+Summarize the counts and one recurring problem. If something is unclear, preserve the uncertainty rather than forcing a favorable score.
+
+## Knowledge check
+
+1. Why is friendly wording insufficient evidence of correctness?
+2. Does finding “14” establish that a return answer is correct?
+3. What should you record when the assistant request fails?
+4. What does “four out of six” establish?
+5. Can the optional Python example decide whether an answer is true?
+
+<details>
+<summary>Read the answers and explanations</summary>
+
+1. An answer can be friendly while contradicting facts or inventing promises.
+2. No. You need to read what the statement says about the 14-day period.
+3. Record an application failure, not a successful reply or an invisible skipped case.
+4. It summarizes those six reviewed outcomes under the stated rules. Broader claims need broader evidence.
+5. No. It only counts outcomes already entered.
+
+For the practice replies: the Friday answer meets the requirement; gift wrapping is invented; the general return answer omits the condition and receipt requirements.
+
+</details>
+
+## What you learned
+
+You can now explain why an answer meets or misses a requirement and summarize the findings without hiding the individual problems.
+
+Continue when another person could understand your review from the stored answer and your reason.
+
+## Keep learning
+
+Continue to [Module 06: getting help with review](06-judges-and-human-review.md).
+
+The [optional technical note](../advanced/05-evaluation-harnesses.md) introduces evaluation programs and automation. [DeepEval](https://github.com/confident-ai/deepeval) and [Promptfoo](https://github.com/promptfoo/promptfoo) are later implementation resources.
+
+The rubric, replies, and counting example here are original; see [attributions](../ATTRIBUTIONS.md).

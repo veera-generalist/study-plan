@@ -1,14 +1,14 @@
 # Annotated GitHub reading library
 
-## For the current first three lessons
+## Teaching structure and introductory reading
 
-Microsoft's Generative AI for Beginners is the main supplementary course for this phase. Its scenario-led organization inspired the rewrite, while our explanations and exercises are original.
+Microsoft's Generative AI for Beginners is a supplementary course and the inspiration for the scenario-led organization of all twelve lessons. Our explanations and exercises are original. These three pages were reviewed as teaching-structure references:
 
 - [Introduction to generative AI](https://github.com/microsoft/generative-ai-for-beginners/blob/main/01-introduction-to-genai/README.md)
 - [Exploring and comparing language models](https://github.com/microsoft/generative-ai-for-beginners/blob/main/02-exploring-and-comparing-different-llms/README.md)
 - [Prompt engineering fundamentals](https://github.com/microsoft/generative-ai-for-beginners/blob/main/04-prompt-engineering-fundamentals/README.md)
 
-Our third lesson introduces prompting; it is not a copy of Microsoft's third lesson. Use the written explanations first. The optional setup and provider-specific notebooks in external courses are not prerequisites for our introductory activities.
+Our topic sequence is different from Microsoft's. Use the written explanations first. External notebooks, framework installation, and model access are not prerequisites for the written activities. Each lesson links to optional technical notes and relevant further reading.
 
 <details>
 <summary>Reference library for later technical study</summary>
@@ -24,7 +24,7 @@ Use this as a reading sequence, not a list of frameworks to install simultaneous
 | 3 | [DeepEval](https://github.com/confident-ai/deepeval) | Quickstart, test cases, metrics, and metric inputs | Implement one deterministic check plus one semantic metric |
 | 4 | [Promptfoo](https://github.com/promptfoo/promptfoo) | Getting-started example, assertions, comparisons, CI concepts | Compare two prompts on identical cases |
 | 5 | [Ragas](https://github.com/vibrantlabsai/ragas) | RAG evaluation example and metric definitions | Trace a score back to its evidence and assumptions |
-| 6 | [Claude Cookbooks](https://github.com/anthropics/claude-cookbooks) | Classification, RAG, tool use, and evaluation recipes | Adapt one recipe to synthetic QA data and evaluate it |
+| 6 | [Claude Cookbooks](https://github.com/anthropics/claude-cookbooks) | Classification, RAG, tool use, and evaluation recipes | Adapt one recipe to a small project with synthetic data and evaluate it |
 | 7 | [Hugging Face Agents Course](https://github.com/huggingface/agents-course) | Fundamentals, one framework, observability/evaluation, final assignment | Inspect a tool-using agent's execution |
 | 8 | [LangGraph](https://github.com/langchain-ai/langgraph) | Quickstart, state, persistence, human oversight | Build a resumable sandbox workflow |
 | 9 | [Phoenix](https://github.com/Arize-ai/phoenix) | Tracing, datasets, and experiments | Diagnose retrieval and tool failures from traces |

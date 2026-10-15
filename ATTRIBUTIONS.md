@@ -6,15 +6,15 @@ The course prose, original examples, synthetic lab records, project assignments,
 
 No upstream course text, notebooks, figures, source files, datasets, or attack collections are bundled in this initial edition. Links are references, not a claim of endorsement or authorship of the linked projects. General concepts are explained in original wording.
 
-## Teaching approach for the first three lessons
+## Teaching approach for all twelve lessons
 
-The beginner rewrite takes inspiration from the organization of Microsoft's Generative AI for Beginners: scenario-led explanations, explicit learning goals, examples, assignments, and knowledge checks. The following lesson pages were reviewed on 2026-10-15:
+All twelve beginner lessons take inspiration from the organization of Microsoft's Generative AI for Beginners: scenario-led explanations, explicit learning goals, examples, assignments, and knowledge checks. The following lesson pages were reviewed on 2026-10-15:
 
 - [Introduction to Generative AI and Large Language Models](https://github.com/microsoft/generative-ai-for-beginners/blob/main/01-introduction-to-genai/README.md)
 - [Exploring and comparing different LLMs](https://github.com/microsoft/generative-ai-for-beginners/blob/main/02-exploring-and-comparing-different-llms/README.md)
 - [Prompt Engineering Fundamentals](https://github.com/microsoft/generative-ai-for-beginners/blob/main/04-prompt-engineering-fundamentals/README.md)
 
-Only the teaching organization informed this rewrite. The Maple Books scenario, facts, prompts, narrative explanations, exercises, comparison replies, and answer explanations were written independently. No Microsoft text, figures, videos, notebook code, or quiz items were imported. Our first-three topic sequence is not Microsoft's first-three topic sequence.
+Only the teaching organization informed this rewrite. The Maple Books scenario, facts, prompts, narrative explanations, exercises, comparison replies, and answer explanations were written independently. No Microsoft text, figures, videos, notebook code, or quiz items were imported. Our topic sequence is not Microsoft's lesson sequence.
 
 ## Source register
 
