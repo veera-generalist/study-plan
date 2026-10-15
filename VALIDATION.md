@@ -44,7 +44,7 @@ Primary documentation destinations were retrieved during review as described in 
 
 ## Scope and limitations
 
-All twelve lessons have been rewritten for beginners. Their written assignments and knowledge checks can be completed without Python. Lesson 05 provides an optional counting example; deeper code is in the advanced notes. Code and structural checks are repository maintenance, not an automated assessment of teaching quality. The earlier technical review predates this full teaching rewrite.
+All twelve lessons have been rewritten for beginners. Their written assignments and knowledge checks can be completed without Python. Lesson 05 provides an optional counting example; deeper code is in the advanced notes. Code and structural checks are repository maintenance, not an automated assessment of teaching quality. The current manual review in REVIEW.md follows the full teaching rewrite and records the navigation, prerequisite, glossary, and learning-gap corrections. Earlier technical findings are retained separately there.
 
 The Markdown checker supports the inline-link and ATX-heading syntax used in this repository. It is not a complete Markdown parser and does not check external website fragments.
 

@@ -1,6 +1,6 @@
 # Module 03 — Writing useful prompts
 
-[Previous: understanding language models](02-model-foundations.md) · [Course home](../README.md)
+[Previous: understanding language models](02-model-foundations.md) · [Course home](../README.md) · [Next: collecting questions](04-datasets-and-oracles.md)
 
 **Before you begin:** complete Modules 01–02. You can do this lesson with the written examples. An AI chat tool is useful for optional practice; no coding setup is required.
 

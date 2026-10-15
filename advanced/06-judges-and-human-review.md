@@ -2,7 +2,7 @@
 
 > Optional technical reference. The beginner lesson is [here](../modules/06-judges-and-human-review.md). Return to this material when you want the deeper implementation detail.
 
-[Course index](../README.md) · Weeks 11–12 · Prerequisites: Modules 04–05
+[Course home](../README.md) · [Technical-note index](README.md) · Prerequisites: technical notes 04–05
 
 **Terms to know:** [LLM-as-judge](../GLOSSARY.md#llm-as-judge) · [Rubric](../GLOSSARY.md#rubric) · [False positive and false negative](../GLOSSARY.md#false-positive-and-false-negative) · [Calibration](../GLOSSARY.md#calibration)
 

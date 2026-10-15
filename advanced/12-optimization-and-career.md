@@ -2,7 +2,7 @@
 
 > Optional technical reference. The beginner lesson is [here](../modules/12-optimization-and-career.md). Return to this material when you want the deeper implementation detail.
 
-[Course index](../README.md) · Weeks 23–24 · Prerequisites: Modules 01–11
+[Course home](../README.md) · [Technical-note index](README.md) · Prerequisites: technical notes 01–11
 
 **Terms to know:** [Baseline](../GLOSSARY.md#baseline) · [Overfitting](../GLOSSARY.md#overfitting) · [Tradeoff frontier](../GLOSSARY.md#tradeoff-frontier) · [Fine-tuning](../GLOSSARY.md#fine-tuning) · [Practical significance](../GLOSSARY.md#practical-significance) · [Cost per successful task](../GLOSSARY.md#cost-per-successful-task)
 

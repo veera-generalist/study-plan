@@ -1,6 +1,41 @@
 # Pre-push course review
 
-> Historical technical review. The subsequent beginner rewrite replaces all twelve main lessons and preserves their earlier code in optional advanced notes. See the current [course home](README.md) and [validation scope](VALIDATION.md).
+## Current review after the twelve-lesson rewrite
+
+Reviewed **2026-10-15**, against local commit `a86461e` plus the corrections described below. This pass covers the twelve main lessons, optional technical material, glossary, course navigation, lab documentation, project briefs, templates, source credits, and executable checks. Changes remain local.
+
+The main worked examples preserve the approved Maple Books facts. The six-question comparison correctly gives A four passes and B five, with two improvements and one regression. Lessons distinguish missing policy information from evidence that a service is unavailable, and distinguish paper simulations from implemented or measured behavior.
+
+| Finding | Correction |
+|---|---|
+| Lesson 01 still said the scenario covered three lessons | Updated it to twelve lessons. |
+| Lesson 03 lacked the next-lesson link in its top navigation | Added the link to Lesson 04. |
+| Technical notes kept the superseded week schedule and ambiguous module prerequisites | Removed week numbers, added the technical index, and identified prerequisites as technical notes. |
+| Glossary topic links no longer led to the detailed material after the rewrite | Linked both beginner lessons and technical notes. |
+| Every glossary example was framed as a QA example | Removed the blanket framing and moved many examples to Maple Books and general software. Classification examples remain where relevant. |
+| A technical note referred to a schema explanation removed from the course guide | Added an example-contract map and corrected the reference, including the local-model lab's severity-example reference. |
+| The jump from counting outcomes to technical Python lacked preparation guidance | Added a seven-step coding progression with practice outcomes and primary Python reading; linked it from the course guide and technical index. |
+| Beginner split guidance omitted close paraphrases | Added a concrete example of keeping related questions together and the limits of wording-only variation. |
+| Beginner counting guidance could leave unresolved judgments hidden | Added explicit counts and denominators for a review with an unresolved outcome. |
+| Offline lab documentation implied all prediction schema problems were rejected before grading | Clarified that bad prediction fields become a failed schema check, while invalid cases and ID/coverage problems reject the run. |
+| Larger project briefs could look like a required return to the QA domain | Clarified their optional status and linked the Maple Books alternative. |
+| The source register's module numbers became ambiguous after the rewrite | Explained how references apply across introductory lessons and technical notes. |
+
+### References rechecked
+
+All thirteen core GitHub repository metadata destinations and their pinned license-file destinations were retrieved again. Their recorded canonical names, archive status, default branches, and license metadata still match the snapshot register. Existing snapshots remain dated reference points, not a claim that those revisions are always the newest.
+
+The three Microsoft lesson pages, supplementary repository destinations, and linked primary documentation were also retrieved. The existing cautions about the archived Anthropic courses repository, Hugging Face Evaluate's LightEval recommendation, Microsoft's GitHub Models retirement notice, and Ragas legacy APIs remain relevant. The MCP introduction redirects to a dated documentation version; its stable entry URL still resolves.
+
+### Verification and remaining gaps
+
+After these corrections, `python3 scripts/validate.py` passed: all 51 Markdown documents passed local-link checks, all thirteen saved examples executed, and all 28 unit tests passed. Python compilation and both expected fixture-gate outcomes also passed. `git diff --check` found no whitespace errors. Reproduce the checks described in [VALIDATION.md](VALIDATION.md). They cover all local links, twelve technical programs, the beginner counting program, 28 unit tests, Python compilation, and both expected fixture-gate outcomes. Teaching accuracy and external references require the separate manual review above.
+
+No live model, upstream framework example, or complete application was run in this pass. The written course is an introduction; the programming progression and technical assignments still require learner practice. There is no repository-wide redistribution license yet, as stated in [ATTRIBUTIONS.md](ATTRIBUTIONS.md). These are explicit limits, not completed engineering milestones.
+
+## Earlier technical review
+
+The following findings predate the full beginner rewrite. References to the course guide's old schema map and time allocation describe the earlier edition; current contract guidance is in the [technical index](advanced/README.md#example-contracts), and current pacing is in the [roadmap](ROADMAP.md).
 
 Reviewed: **2026-10-15**. Scope: all twelve lesson/example pairs, glossary navigation, setup, roadmap, project briefs, templates, attribution records, executable checks, and primary reference destinations.
 

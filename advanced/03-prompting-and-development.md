@@ -1,8 +1,8 @@
 # Module 03 — Prompting, structured output, and AI-assisted development
 
-> Optional technical reference. The current beginner lesson is [here](../modules/03-prompting-and-development.md). You can complete the first three lessons without this material.
+> Optional technical reference. The current beginner lesson is [here](../modules/03-prompting-and-development.md). All twelve beginner lessons have a written path; use this note when you are ready for implementation.
 
-[Course index](../README.md) · Weeks 5–6 · Prerequisites: Modules 01–02
+[Course home](../README.md) · [Technical-note index](README.md) · Prerequisites: technical notes 01–02
 
 **Terms to know:** [Prompt](../GLOSSARY.md#prompt) · [Zero-shot and few-shot](../GLOSSARY.md#zero-shot-and-few-shot) · [Structured output](../GLOSSARY.md#structured-output) · [Abstention](../GLOSSARY.md#abstention)
 
@@ -164,7 +164,7 @@ Read current comparison examples in [Promptfoo](https://github.com/promptfoo/pro
 
 Do not insert reference answers into production input during evaluation.
 
-If you have only used stored predictions so far, follow the [optional live-model bridge](../labs/live-model/README.md) to make and validate a real request. It uses component labels rather than this severity policy; keep the two contracts separate as explained in the [course guide](../COURSE_GUIDE.md).
+If you have only used stored predictions so far, follow the [optional live-model bridge](../labs/live-model/README.md) to make and validate a real request. It uses component labels rather than this severity policy; keep the two contracts separate as explained in the [example-contract map](README.md#example-contracts).
 
 ## Review and answers
 

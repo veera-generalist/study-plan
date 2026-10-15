@@ -46,7 +46,7 @@ Results are written to the ignored `labs/live-model/reports/response.json`. Use 
 
 Exit 0 means a structurally valid prediction, **not** proven correctness. Exit 1 means an application/output failure. Exit 2 means invalid local input/configuration or a report-write failure.
 
-The label vocabulary is component classification: authentication, payments, or other. It is separate from Module 03's severity-decision example.
+The label vocabulary is component classification: authentication, payments, or other. It is separate from [technical note 03's severity-decision example](../../advanced/03-prompting-and-development.md).
 
 ## 5. Turn inference into evaluation
 

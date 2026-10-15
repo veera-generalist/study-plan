@@ -2,7 +2,7 @@
 
 > Optional technical reference. The beginner lesson is [here](../modules/08-rag-evaluation-and-statistics.md). Return to this material when you want the deeper implementation detail.
 
-[Course index](../README.md) · Weeks 15–16 · Prerequisites: Modules 04–07
+[Course home](../README.md) · [Technical-note index](README.md) · Prerequisites: technical notes 04–07
 
 **Terms to know:** [Recall at k](../GLOSSARY.md#recall-at-k) · [MRR](../GLOSSARY.md#mrr) · [Paired comparison](../GLOSSARY.md#paired-comparison) · [Bootstrap](../GLOSSARY.md#bootstrap) · [Confidence interval](../GLOSSARY.md#confidence-interval)
 

@@ -111,6 +111,8 @@ A percentage is simply another way to express the count. Four out of six is abou
 
 The questions you selected and the way you reviewed them affect what the result means.
 
+If four replies meet the requirements, one fails, and one still needs review, write all three counts. You have four confirmed passes among six replies, with one unresolved judgment. Reporting only “four out of five passed” would hide the missing judgment unless you also clearly state that it counts only the five resolved reviews. The optional program below uses four already-resolved outcomes, so it has no unresolved category to summarize.
+
 ### 6. Look at different kinds of question
 
 Imagine all four successful answers were simple opening-hours questions and both unsuccessful answers involved missing information.

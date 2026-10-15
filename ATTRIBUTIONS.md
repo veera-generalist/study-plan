@@ -20,6 +20,8 @@ Only the teaching organization informed this rewrite. The Maple Books scenario, 
 
 Research/reference review date: **2026-10-15**. This records a documentation review, not a claim that every upstream example was executed. Links follow canonical repositories observed during research; redirects and maintenance status can change.
 
+Module numbers below identify topic areas across the beginner lessons and optional technical notes. Detailed Python, mathematics, and framework reading generally belongs to the technical notes. The Python tutorial also supports the optional beginner coding progression.
+
 | Source and credited organization/community | Used as a reference for | Upstream license/rights entry point |
 |---|---|---|
 | [Generative AI for Beginners — Microsoft contributors](https://github.com/microsoft/generative-ai-for-beginners) | Foundations, prompting, application and search reading assignments; Modules 01, 03, 07 | [Repository license](https://github.com/microsoft/generative-ai-for-beginners/blob/d45da91247ecb91e5346caacdd5a5fb9c5b9d85e/LICENSE) |

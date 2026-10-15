@@ -2,7 +2,7 @@
 
 > Optional technical reference. The beginner lesson is [here](../modules/05-evaluation-harnesses.md). Return to this material when you want the deeper implementation detail.
 
-[Course index](../README.md) · Weeks 9–10 · Prerequisite: Module 04
+[Course home](../README.md) · [Technical-note index](README.md) · Prerequisite: technical note 04
 
 **Terms to know:** [Evaluation harness](../GLOSSARY.md#evaluation-harness) · [Grader](../GLOSSARY.md#grader) · [Deterministic grader](../GLOSSARY.md#deterministic-grader) · [Semantic grader](../GLOSSARY.md#semantic-grader) · [Coverage](../GLOSSARY.md#coverage) · [Metric](../GLOSSARY.md#metric)
 

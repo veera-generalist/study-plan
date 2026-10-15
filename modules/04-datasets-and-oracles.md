@@ -125,6 +125,8 @@ The first group is often called a **development set**. The reserved group is a *
 
 You can begin with four practice questions and two reserved questions. Those numbers are teaching choices, not evidence that an application is reliable.
 
+Keep close paraphrases together when reserving questions. “Are you open on Sunday?” and “Can I visit on Sunday?” test almost the same fact; putting one in each group provides little evidence about a new kind of task. A useful fresh group should also cover situations beyond wording changes.
+
 If you inspect a reserved question and use it to revise the prompt, it is no longer a fresh check. Record that and reserve a different example for a later assessment.
 
 ## Walkthrough: a six-question collection

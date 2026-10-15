@@ -1,8 +1,8 @@
 # Module 02 — Models, tokens, embeddings, and ML basics
 
-> Optional technical reference. The current beginner lesson is [here](../modules/02-model-foundations.md). You can complete the first three lessons without this material.
+> Optional technical reference. The current beginner lesson is [here](../modules/02-model-foundations.md). All twelve beginner lessons have a written path; use this note when you are ready for implementation.
 
-[Course index](../README.md) · Weeks 3–4 · Prerequisite: Module 01
+[Course home](../README.md) · [Technical-note index](README.md) · Prerequisite: technical note 01
 
 **Terms to know:** [LLM](../GLOSSARY.md#llm) · [Token](../GLOSSARY.md#token) · [Context window](../GLOSSARY.md#context-window) · [Embedding](../GLOSSARY.md#embedding) · [Inference](../GLOSSARY.md#inference) · [Temperature](../GLOSSARY.md#temperature)
 

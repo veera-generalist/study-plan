@@ -1,8 +1,8 @@
 # Module 01 — Python engineering for AI systems
 
-> Optional technical reference. The current beginner lesson is [here](../modules/01-python-engineering.md). You can complete the first three lessons without this material.
+> Optional technical reference. The current beginner lesson is [here](../modules/01-python-engineering.md). All twelve beginner lessons have a written path; use this note when you are ready for implementation.
 
-[Course index](../README.md) · Weeks 1–2 · Prerequisite: basic programming or additional practice time
+[Course home](../README.md) · [Technical-note index](README.md) · Prerequisite: basic programming or additional practice time
 
 **Terms to know:** [API](../GLOSSARY.md#api) · [Adapter](../GLOSSARY.md#adapter) · [Schema](../GLOSSARY.md#schema) · [Type hint](../GLOSSARY.md#type-hint) · [Runtime validation](../GLOSSARY.md#runtime-validation) · [JSONL](../GLOSSARY.md#jsonl) · [Exception](../GLOSSARY.md#exception)
 

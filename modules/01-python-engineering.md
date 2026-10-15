@@ -28,7 +28,7 @@ By the end, you should be able to:
 
 ## Scenario: Maple Books
 
-Maple Books is a fictional shop. We will use these facts in all three lessons:
+Maple Books is a fictional shop. We will use these approved facts throughout the twelve lessons:
 
 > **Maple Books information**
 >

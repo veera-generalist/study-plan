@@ -2,7 +2,7 @@
 
 > Optional technical reference. The beginner lesson is [here](../modules/11-observability-and-delivery.md). Return to this material when you want the deeper implementation detail.
 
-[Course index](../README.md) · Weeks 21–22 · Prerequisites: Modules 05–10
+[Course home](../README.md) · [Technical-note index](README.md) · Prerequisites: technical notes 05–10
 
 **Terms to know:** [Observability](../GLOSSARY.md#observability) · [Trace](../GLOSSARY.md#trace) · [Span](../GLOSSARY.md#span) · [p95 latency](../GLOSSARY.md#p95-latency) · [CI](../GLOSSARY.md#ci) · [Release gate](../GLOSSARY.md#release-gate)
 

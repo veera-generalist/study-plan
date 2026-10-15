@@ -2,7 +2,7 @@
 
 > Optional technical reference. The beginner lesson is [here](../modules/04-datasets-and-oracles.md). Return to this material when you want the deeper implementation detail.
 
-[Course index](../README.md) · Weeks 7–8 · Prerequisites: Modules 01–03
+[Course home](../README.md) · [Technical-note index](README.md) · Prerequisites: technical notes 01–03
 
 **Terms to know:** [Dataset](../GLOSSARY.md#dataset) · [Oracle](../GLOSSARY.md#oracle) · [Label](../GLOSSARY.md#label) · [Annotation and adjudication](../GLOSSARY.md#annotation-and-adjudication) · [Held-out set](../GLOSSARY.md#held-out-set) · [Provenance and dataset card](../GLOSSARY.md#provenance-and-dataset-card)
 

@@ -66,7 +66,7 @@ The earlier technical chapters are preserved for all twelve topics in the [techn
 Run `python3 scripts/validate.py` for the offline repository checks. This verifies navigation and code examples; it is not a learner prerequisite or an automated judgment of teaching quality.
 
 - [Validation scope](VALIDATION.md)
-- [Earlier technical review](REVIEW.md)
+- [Pre-push course review](REVIEW.md)
 - [Dated reference snapshots](references/README.md)
 - [Contribution guidance](CONTRIBUTING.md)
 

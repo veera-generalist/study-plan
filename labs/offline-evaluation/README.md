@@ -25,7 +25,7 @@ The threshold is an educational CLI option, not a recommended production release
 
 Cases require id, expected_decision (answer or abstain), expected_label (text or explicit null), allowed_source_ids, citation_required, and slice. Even an abstention case must include expected_label: null; omitting the field is invalid data. Predictions specify the case ID, decision, label, and source IDs.
 
-A case passes only when all of its checks pass. IDs and schemas are checked before grading. The report includes all cases, failed check names, slice rates, input-file hashes, and the runner version.
+A case passes only when all of its checks pass. Case schemas, record IDs, and complete prediction coverage are validated before grading. A prediction with the correct case ID but invalid decision/label/source fields is recorded as a failed `schema_valid` check; it is not silently dropped or treated as an invalid dataset. The report includes all cases, failed check names, slice rates, input-file hashes, and the runner version.
 
 ## Deliberate failures
 

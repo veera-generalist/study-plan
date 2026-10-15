@@ -2,7 +2,7 @@
 
 > Optional technical reference. The beginner lesson is [here](../modules/07-rag-engineering.md). Return to this material when you want the deeper implementation detail.
 
-[Course index](../README.md) · Weeks 13–14 · Prerequisites: Modules 01–06
+[Course home](../README.md) · [Technical-note index](README.md) · Prerequisites: technical notes 01–06
 
 **Terms to know:** [RAG](../GLOSSARY.md#rag) · [Chunk](../GLOSSARY.md#chunk) · [Retrieval](../GLOSSARY.md#retrieval) · [Keyword and semantic search](../GLOSSARY.md#keyword-and-semantic-search) · [Citation](../GLOSSARY.md#citation)
 

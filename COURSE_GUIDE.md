@@ -67,6 +67,8 @@ Lesson 05 shows a short optional program that counts review outcomes. It does no
 
 When ready to program, begin with a small familiar task: store examples, print a summary, read a file, then add a model adapter. The [technical notes](advanced/README.md) and [setup guide](SETUP.md) provide the deeper material.
 
+If Python is new to you, use the [small coding progression](labs/beginner/README.md#from-one-program-to-the-technical-notes) to practice names, lists, loops, functions, and files before the technical notes. Their prerequisites refer to other technical notes, and their examples use several different tasks; consult the [example-contract map](advanced/README.md#example-contracts) before combining them.
+
 The written path builds understanding. To demonstrate a working AI system, you will also need programming practice, an actual implementation, and recorded results.
 
 ## Finish with an honest project

@@ -2,7 +2,7 @@
 
 > Optional technical reference. The beginner lesson is [here](../modules/10-agent-evaluation-and-security.md). Return to this material when you want the deeper implementation detail.
 
-[Course index](../README.md) · Weeks 19–20 · Prerequisite: Module 09
+[Course home](../README.md) · [Technical-note index](README.md) · Prerequisite: technical note 09
 
 **Terms to know:** [Prompt injection](../GLOSSARY.md#prompt-injection) · [Trust boundary](../GLOSSARY.md#trust-boundary) · [Red teaming](../GLOSSARY.md#red-teaming) · [Pass at k](../GLOSSARY.md#pass-at-k) · [Pass all k](../GLOSSARY.md#pass-all-k) · [Authentication and authorization](../GLOSSARY.md#authentication-and-authorization)
 

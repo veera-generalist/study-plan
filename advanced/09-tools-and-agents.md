@@ -2,7 +2,7 @@
 
 > Optional technical reference. The beginner lesson is [here](../modules/09-tools-and-agents.md). Return to this material when you want the deeper implementation detail.
 
-[Course index](../README.md) · Weeks 17–18 · Prerequisites: Modules 01–08
+[Course home](../README.md) · [Technical-note index](README.md) · Prerequisites: technical notes 01–08
 
 **Terms to know:** [Agent](../GLOSSARY.md#agent) · [Workflow](../GLOSSARY.md#workflow) · [Tool and function calling](../GLOSSARY.md#tool-and-function-calling) · [State](../GLOSSARY.md#state) · [Idempotency](../GLOSSARY.md#idempotency) · [MCP](../GLOSSARY.md#mcp)
 

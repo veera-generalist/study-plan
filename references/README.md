@@ -37,6 +37,12 @@ Primary documentation destinations for Python (tutorial, glossary, statistics, l
 
 This is a dated source review, not a continuous availability guarantee. The local checker validates local links and heading fragments; it does not crawl external websites or verify their fragments.
 
+## Recheck after the beginner rewrite
+
+On 2026-10-15, the thirteen core repositories and pinned license destinations were retrieved again, along with the linked primary documentation, the three Microsoft lesson pages, and supplementary repository destinations. No replacement destination was needed. The existing snapshots remain historical reference revisions rather than installed package versions.
+
+The stable MCP introduction URL currently redirects to documentation under `2026-07-28`. Python's rolling `/3/` pages currently identify Python 3.15.0, while local verification uses 3.14.8. Neither observation changes the actual runtime or installs a dependency. See the [current review](../REVIEW.md#current-review-after-the-twelve-lesson-rewrite) for the scope and limits of this pass.
+
 ## Repeat the source review
 
 Check repository redirects and archived status, capture the current default-branch revision, inspect the actual license path, and verify that the referenced concepts still appear in the docs. Record new snapshots deliberately. A moved or retired API example should be marked or replaced rather than silently kept as a current installation guide.
