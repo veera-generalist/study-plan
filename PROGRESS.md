@@ -2,6 +2,8 @@
 
 Status starts as not started. Do not mark completion without an evidence link.
 
+Useful intermediate statuses are concept example complete, project in progress, and live evidence pending. An offline example passing does not complete a live-model or portfolio assignment; see the [course guide](COURSE_GUIDE.md).
+
 | Module | Status | Evidence / commit | Failure investigated | Review completed |
 |---|---|---|---|---|
 | 01 | Not started | — | — | — |

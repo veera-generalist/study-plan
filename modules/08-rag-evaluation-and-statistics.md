@@ -143,7 +143,7 @@ Python's [statistics documentation](https://docs.python.org/3/library/statistics
 
 ## Lab
 
-Compare two retrieval strategies on your held-out questions. Report document recall, answer correctness, abstention behavior, latency, and per-case wins/losses. Implement a paired bootstrap with a recorded seed. Inspect failures before selecting a configuration.
+Compare two retrieval strategies on development questions first. Report document recall, answer correctness, abstention behavior, latency, and per-case wins/losses. Implement a paired bootstrap with a recorded seed. Inspect development failures and select/freeze the candidate before its final held-out assessment. If held-out failures drive another change, treat those cases as development evidence and reserve fresh independent cases for a later final assessment.
 
 Write one paragraph distinguishing observed improvement from what you can infer about future production traffic.
 

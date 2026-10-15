@@ -154,7 +154,7 @@ Use the current [DeepEval repository](https://github.com/confident-ai/deepeval) 
 
 Run the [offline evaluator](../labs/offline-evaluation/README.md), read every case result, and compare it with the stored predictions. It deliberately contains failures and therefore exits with a nonzero status by default. Its report is an educational contract check, not a semantic LLM benchmark.
 
-Extend it with a new slice or a numeric constraint. Then build a separate live-model adapter in your project. Ensure an API error cannot be turned into a pass. Use the [report template](../templates/evaluation-report.md).
+Extend it with a new slice or a numeric constraint. Then use the [optional local-model adapter](../labs/live-model/README.md) as a starting point for a separate live adapter in your project. Its component-label schema differs from the stored evaluator fixture; normalize records explicitly rather than treating them as interchangeable. Ensure an API error cannot be turned into a pass. Use the [report template](../templates/evaluation-report.md).
 
 ## Review and answers
 

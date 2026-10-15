@@ -8,8 +8,8 @@ Explain new technical words when first introduced and add a plain-language gloss
 
 1. Explain the learning problem or factual correction.
 2. Update the lesson, example, and answer guidance together.
-3. Check local links with `python3 scripts/check_course.py`.
-4. Run `python3 scripts/run_module_examples.py` to check lesson/script consistency and execute assertions. Run the offline lab tests if its code or data changes.
+3. Run `python3 scripts/validate.py` for the full offline verification, including local file/heading links, examples, evaluator tests, and optional-adapter simulated tests.
+4. Keep upstream source review separate: the offline validation does not check external URL availability or run an actual model.
 5. Record new sources and any imported material in ATTRIBUTIONS.md.
 6. Preserve honest limitations; do not invent experiment results or completion evidence.
 

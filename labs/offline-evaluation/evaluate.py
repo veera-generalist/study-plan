@@ -6,7 +6,7 @@ import math
 from collections import defaultdict
 from pathlib import Path
 
-VERSION = "1.0"
+VERSION = "1.1"
 DECISIONS = {"answer", "abstain"}
 
 
@@ -17,7 +17,10 @@ def read_jsonl(path):
         for line_number, line in enumerate(handle, 1):
             if not line.strip():
                 continue
-            record = json.loads(line)
+            try:
+                record = json.loads(line)
+            except json.JSONDecodeError as error:
+                raise ValueError(f"{path}:{line_number}: invalid JSON: {error.msg}") from error
             if not isinstance(record, dict):
                 raise ValueError(f"{path}:{line_number}: expected an object")
             record_id = record.get("id")
@@ -39,6 +42,11 @@ def string_list(value):
 
 
 def validate_case(case):
+    required = {"id", "slice", "expected_decision", "expected_label",
+                "allowed_source_ids", "citation_required"}
+    missing = required - set(case)
+    if missing:
+        raise ValueError(f"{case.get('id', '<unknown>')}: missing fields {sorted(missing)}")
     expected = case.get("expected_decision")
     label = case.get("expected_label")
     if not isinstance(expected, str) or expected not in DECISIONS:
@@ -85,6 +93,8 @@ def evaluate(cases, predictions):
     if not cases or not predictions:
         raise ValueError("Cases and predictions must be nonempty")
     for records, name in ((cases, "cases"), (predictions, "predictions")):
+        if any(not isinstance(record, dict) for record in records):
+            raise ValueError(f"Every record in {name} must be an object")
         ids = [record.get("id") for record in records]
         if any(not isinstance(item, str) or not item.strip() for item in ids):
             raise ValueError(f"Invalid ID in {name}")

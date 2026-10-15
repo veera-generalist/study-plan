@@ -35,6 +35,10 @@ Choose DeepEval **or** Promptfoo as your first evaluation framework. Learn the o
 
 Reviewed 2026-10-15. The older [Anthropic courses repository](https://github.com/anthropics/courses) is archived; use it as historical conceptual material and verify old SDK examples against current documentation. [Hugging Face Evaluate](https://github.com/huggingface/evaluate) points readers to LightEval for newer LLM evaluation approaches. Ragas and Claude Cookbooks links above use their observed canonical repository locations.
 
+See the [reference snapshots](references/README.md) for exact repository revisions and license files. Ragas documentation includes current and legacy API examples; match the documentation to the package you install. Microsoft's course README includes a July 2026 GitHub Models retirement notice, so review its current setup choices before using old notebooks. Phoenix's license is Elastic License 2.0; do not infer permissive reuse from its source being visible.
+
+For a first concrete model adapter after the offline exercises, use the [optional local-model lab](labs/live-model/README.md). It follows the [Ollama chat API](https://docs.ollama.com/api/chat); real inference needs your own prepared local model and was not run during source review.
+
 Stars and popularity are not selection criteria here. Choose resources for conceptual coverage, usable examples, and relevance to your task.
 
 ## Repository study worksheet

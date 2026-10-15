@@ -1,0 +1,150 @@
+{
+  "reviewed_on": "2026-10-15",
+  "scope": "Reference snapshots, not installed dependency versions or executed upstream examples.",
+  "repositories": [
+    {
+      "repository": "microsoft/generative-ai-for-beginners",
+      "checked_on": "2026-10-15",
+      "default_branch": "main",
+      "archived": false,
+      "revision": "d45da91247ecb91e5346caacdd5a5fb9c5b9d85e",
+      "source_url": "https://github.com/microsoft/generative-ai-for-beginners/tree/d45da91247ecb91e5346caacdd5a5fb9c5b9d85e",
+      "readme_url": "https://github.com/microsoft/generative-ai-for-beginners/blob/d45da91247ecb91e5346caacdd5a5fb9c5b9d85e/README.md",
+      "license_url": "https://github.com/microsoft/generative-ai-for-beginners/blob/d45da91247ecb91e5346caacdd5a5fb9c5b9d85e/LICENSE",
+      "license_metadata": "MIT"
+    },
+    {
+      "repository": "huggingface/course",
+      "checked_on": "2026-10-15",
+      "default_branch": "main",
+      "archived": false,
+      "revision": "8b893f0ede6c781045692a7f892f25a0c92b4805",
+      "source_url": "https://github.com/huggingface/course/tree/8b893f0ede6c781045692a7f892f25a0c92b4805",
+      "readme_url": "https://github.com/huggingface/course/blob/8b893f0ede6c781045692a7f892f25a0c92b4805/README.md",
+      "license_url": "https://github.com/huggingface/course/blob/8b893f0ede6c781045692a7f892f25a0c92b4805/LICENSE",
+      "license_metadata": "Apache-2.0"
+    },
+    {
+      "repository": "huggingface/agents-course",
+      "checked_on": "2026-10-15",
+      "default_branch": "main",
+      "archived": false,
+      "revision": "3c469e773ec04e5f338b727ff20e3a6ea823ff81",
+      "source_url": "https://github.com/huggingface/agents-course/tree/3c469e773ec04e5f338b727ff20e3a6ea823ff81",
+      "readme_url": "https://github.com/huggingface/agents-course/blob/3c469e773ec04e5f338b727ff20e3a6ea823ff81/README.md",
+      "license_url": "https://github.com/huggingface/agents-course/blob/3c469e773ec04e5f338b727ff20e3a6ea823ff81/LICENSE",
+      "license_metadata": "Apache-2.0"
+    },
+    {
+      "repository": "anthropics/claude-cookbooks",
+      "checked_on": "2026-10-15",
+      "default_branch": "main",
+      "archived": false,
+      "revision": "b2b0aa1ff7d8980b005b225d3802969c87bedad5",
+      "source_url": "https://github.com/anthropics/claude-cookbooks/tree/b2b0aa1ff7d8980b005b225d3802969c87bedad5",
+      "readme_url": "https://github.com/anthropics/claude-cookbooks/blob/b2b0aa1ff7d8980b005b225d3802969c87bedad5/README.md",
+      "license_url": "https://github.com/anthropics/claude-cookbooks/blob/b2b0aa1ff7d8980b005b225d3802969c87bedad5/LICENSE",
+      "license_metadata": "MIT"
+    },
+    {
+      "repository": "confident-ai/deepeval",
+      "checked_on": "2026-10-15",
+      "default_branch": "main",
+      "archived": false,
+      "revision": "03ef3a25c2acbf09ef001080d2591704b9606931",
+      "source_url": "https://github.com/confident-ai/deepeval/tree/03ef3a25c2acbf09ef001080d2591704b9606931",
+      "readme_url": "https://github.com/confident-ai/deepeval/blob/03ef3a25c2acbf09ef001080d2591704b9606931/README.md",
+      "license_url": "https://github.com/confident-ai/deepeval/blob/03ef3a25c2acbf09ef001080d2591704b9606931/LICENSE.md",
+      "license_metadata": "Apache-2.0"
+    },
+    {
+      "repository": "promptfoo/promptfoo",
+      "checked_on": "2026-10-15",
+      "default_branch": "main",
+      "archived": false,
+      "revision": "1c28848f61a21719867b81fbd0f105f1aa1e8f1f",
+      "source_url": "https://github.com/promptfoo/promptfoo/tree/1c28848f61a21719867b81fbd0f105f1aa1e8f1f",
+      "readme_url": "https://github.com/promptfoo/promptfoo/blob/1c28848f61a21719867b81fbd0f105f1aa1e8f1f/README.md",
+      "license_url": "https://github.com/promptfoo/promptfoo/blob/1c28848f61a21719867b81fbd0f105f1aa1e8f1f/LICENSE",
+      "license_metadata": "MIT"
+    },
+    {
+      "repository": "vibrantlabsai/ragas",
+      "checked_on": "2026-10-15",
+      "default_branch": "main",
+      "archived": false,
+      "revision": "298b68274234c060deacab3cf5fb52aa3a20e885",
+      "source_url": "https://github.com/vibrantlabsai/ragas/tree/298b68274234c060deacab3cf5fb52aa3a20e885",
+      "readme_url": "https://github.com/vibrantlabsai/ragas/blob/298b68274234c060deacab3cf5fb52aa3a20e885/README.md",
+      "license_url": "https://github.com/vibrantlabsai/ragas/blob/298b68274234c060deacab3cf5fb52aa3a20e885/LICENSE",
+      "license_metadata": "Apache-2.0"
+    },
+    {
+      "repository": "langchain-ai/langgraph",
+      "checked_on": "2026-10-15",
+      "default_branch": "main",
+      "archived": false,
+      "revision": "5eb60aef6f3837a1fb632a8abc6cf8e8da81785b",
+      "source_url": "https://github.com/langchain-ai/langgraph/tree/5eb60aef6f3837a1fb632a8abc6cf8e8da81785b",
+      "readme_url": "https://github.com/langchain-ai/langgraph/blob/5eb60aef6f3837a1fb632a8abc6cf8e8da81785b/README.md",
+      "license_url": "https://github.com/langchain-ai/langgraph/blob/5eb60aef6f3837a1fb632a8abc6cf8e8da81785b/LICENSE",
+      "license_metadata": "MIT"
+    },
+    {
+      "repository": "Arize-ai/phoenix",
+      "checked_on": "2026-10-15",
+      "default_branch": "main",
+      "archived": false,
+      "revision": "dd3265653f10e0534ae99021d3be5a894227706c",
+      "source_url": "https://github.com/Arize-ai/phoenix/tree/dd3265653f10e0534ae99021d3be5a894227706c",
+      "readme_url": "https://github.com/Arize-ai/phoenix/blob/dd3265653f10e0534ae99021d3be5a894227706c/README.md",
+      "license_url": "https://github.com/Arize-ai/phoenix/blob/dd3265653f10e0534ae99021d3be5a894227706c/LICENSE",
+      "license_metadata": "NOASSERTION",
+      "license_note": "LICENSE text identifies Elastic License 2.0; do not infer permissive reuse from repository visibility."
+    },
+    {
+      "repository": "NVIDIA/garak",
+      "checked_on": "2026-10-15",
+      "default_branch": "main",
+      "archived": false,
+      "revision": "197d68645ecc8cec1a71ea20872823a8b54f92f3",
+      "source_url": "https://github.com/NVIDIA/garak/tree/197d68645ecc8cec1a71ea20872823a8b54f92f3",
+      "readme_url": "https://github.com/NVIDIA/garak/blob/197d68645ecc8cec1a71ea20872823a8b54f92f3/README.md",
+      "license_url": "https://github.com/NVIDIA/garak/blob/197d68645ecc8cec1a71ea20872823a8b54f92f3/LICENSE",
+      "license_metadata": "Apache-2.0"
+    },
+    {
+      "repository": "EleutherAI/lm-evaluation-harness",
+      "checked_on": "2026-10-15",
+      "default_branch": "main",
+      "archived": false,
+      "revision": "d6de81643928d653435c431bae19945d41d32520",
+      "source_url": "https://github.com/EleutherAI/lm-evaluation-harness/tree/d6de81643928d653435c431bae19945d41d32520",
+      "readme_url": "https://github.com/EleutherAI/lm-evaluation-harness/blob/d6de81643928d653435c431bae19945d41d32520/README.md",
+      "license_url": "https://github.com/EleutherAI/lm-evaluation-harness/blob/d6de81643928d653435c431bae19945d41d32520/LICENSE.md",
+      "license_metadata": "MIT"
+    },
+    {
+      "repository": "stanfordnlp/dspy",
+      "checked_on": "2026-10-15",
+      "default_branch": "main",
+      "archived": false,
+      "revision": "ef98720641823d097fe12e57bd0a9695b57c4bcf",
+      "source_url": "https://github.com/stanfordnlp/dspy/tree/ef98720641823d097fe12e57bd0a9695b57c4bcf",
+      "readme_url": "https://github.com/stanfordnlp/dspy/blob/ef98720641823d097fe12e57bd0a9695b57c4bcf/README.md",
+      "license_url": "https://github.com/stanfordnlp/dspy/blob/ef98720641823d097fe12e57bd0a9695b57c4bcf/LICENSE",
+      "license_metadata": "MIT"
+    },
+    {
+      "repository": "GokuMohandas/Made-With-ML",
+      "checked_on": "2026-10-15",
+      "default_branch": "main",
+      "archived": false,
+      "revision": "3361aeb8ddfc2affdba9f545c978c38c85cee764",
+      "source_url": "https://github.com/GokuMohandas/Made-With-ML/tree/3361aeb8ddfc2affdba9f545c978c38c85cee764",
+      "readme_url": "https://github.com/GokuMohandas/Made-With-ML/blob/3361aeb8ddfc2affdba9f545c978c38c85cee764/README.md",
+      "license_url": "https://github.com/GokuMohandas/Made-With-ML/blob/3361aeb8ddfc2affdba9f545c978c38c85cee764/LICENSE",
+      "license_metadata": "MIT"
+    }
+  ]
+}

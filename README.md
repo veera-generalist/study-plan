@@ -9,6 +9,7 @@ A practical, evaluation-first course for a QA engineer with 15+ years of experie
 Keep the [beginner-friendly glossary](GLOSSARY.md) open while studying. Begin with its twelve starter terms, then use each module's **Terms to know** links as unfamiliar words appear. Every glossary entry includes a QA example.
 
 1. Read the [roadmap](ROADMAP.md) and [setup guide](SETUP.md).
+   Use the [course guide](COURSE_GUIDE.md) to distinguish offline examples, live exercises, and portfolio evidence.
 2. Complete [Module 01](modules/01-python-engineering.md).
 3. Run the [module examples](labs/module-examples/README.md), then the [offline evaluation lab](labs/offline-evaluation/README.md).
 4. Update your [progress tracker](PROGRESS.md) with evidence after each module.
@@ -34,6 +35,10 @@ Keep the [beginner-friendly glossary](GLOSSARY.md) open while studying. Begin wi
 ## Supporting material
 
 - [Twelve runnable lesson examples and verification command](labs/module-examples/README.md)
+- [Optional first live-model request and adapter tests](labs/live-model/README.md)
+- [How to study, review labels solo, and manage dataset splits](COURSE_GUIDE.md)
+- [Dated reference snapshots and freshness findings](references/README.md)
+- [Pre-push review findings and verification limits](REVIEW.md)
 - [Annotated GitHub reading library](RESOURCES.md)
 - [Attributions and reuse policy](ATTRIBUTIONS.md)
 - [Beginner-friendly glossary: definitions, QA examples, and commonly confused terms](GLOSSARY.md)
@@ -46,6 +51,8 @@ Keep the [beginner-friendly glossary](GLOSSARY.md) open while studying. Begin wi
 
 ## Learning principles
 
+Run `python3 scripts/validate.py` for the full offline checks; see [VALIDATION.md](VALIDATION.md) for exactly what is verified.
+
 Build a small system, state what good behavior means, collect representative cases, evaluate it, inspect failures, and improve one thing at a time. Use deterministic checks for exact requirements and calibrated human/model judgments for semantic requirements. Preserve the evidence behind every quality claim.
 
 Your QA expertise transfers directly to failure analysis, test design, automation, and release decisions. Add Python, model behavior, data discipline, and statistical reasoning. Practice building the systems you evaluate.
@@ -54,4 +61,4 @@ Your QA expertise transfers directly to failure analysis, test design, automatio
 
 This is an independently written study course assembled with AI assistance for this repository. It is not an official course from any referenced organization, and no endorsement is implied. Upstream courses, source code, notebooks, and figures are linked rather than mirrored. Read [ATTRIBUTIONS.md](ATTRIBUTIONS.md) before importing outside material.
 
-Research links were checked on 2026-10-15. External APIs, model availability, and repository locations can change. All included Python examples and the offline lab are independent of provider APIs; follow each upstream project's current setup instructions for external exercises. The examples use controlled synthetic data and do not constitute measured live-model performance.
+Research links were checked on 2026-10-15; see the reference snapshots for scope. External APIs, model availability, and repository locations can change. The twelve lesson examples and offline evaluator require no model service. The optional live-model adapter calls a local model service; its simulated-response tests require no network. Real-model inference and full portfolio projects were not executed during course validation.

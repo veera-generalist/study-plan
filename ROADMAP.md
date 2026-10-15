@@ -10,7 +10,7 @@ Start with evaluation as your specialization while building enough application e
 
 ## Weekly schedule
 
-Use roughly two hours for reading, five for implementation, two for evaluation, and one for recording findings. Reduce scope before abandoning the feedback loop. If Python is new, spend extra weeks on Module 01; if you are already a Python SDET, demonstrate its exit criteria and move forward.
+Use roughly two hours for reading, five for implementation, two for evaluation, and one for recording findings: ten hours total. At eight hours per week, reduce optional reading or extend the calendar. See the [course guide](COURSE_GUIDE.md) for small first datasets and a solo-review path. If Python is new, spend extra weeks on Module 01; if you are already a Python SDET, demonstrate its exit criteria and move forward.
 
 | Weeks | First week | Second week |
 |---|---|---|
@@ -41,6 +41,8 @@ Use roughly two hours for reading, five for implementation, two for evaluation, 
 Use Python, Git, standard-library JSON/CSV tooling, and a test runner. The included lab uses Python's unittest. Add pytest and schema validation as exercises. Later choose one model provider or local model, one retrieval implementation, one evaluation framework, and one tracing tool.
 
 Start with DeepEval or Promptfoo rather than adopting several frameworks at once. Add Ragas when studying RAG metrics and Phoenix when studying traces. These are learning choices, not mandatory dependencies.
+
+After Module 03, the [optional live-model bridge](labs/live-model/README.md) demonstrates a real adapter interface. Its tests use simulated responses; running inference requires your selected local model. Framework examples and full project implementations remain learner work rather than prebuilt production applications.
 
 ## Definition of completion
 

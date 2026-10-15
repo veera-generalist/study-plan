@@ -23,7 +23,7 @@ The threshold is an educational CLI option, not a recommended production release
 
 ## Data contract
 
-Cases specify an expected decision (answer or abstain), an exact expected label or null, allowed source IDs, a citation-required flag, and a slice. Predictions specify the case ID, decision, label, and source IDs.
+Cases require id, expected_decision (answer or abstain), expected_label (text or explicit null), allowed_source_ids, citation_required, and slice. Even an abstention case must include expected_label: null; omitting the field is invalid data. Predictions specify the case ID, decision, label, and source IDs.
 
 A case passes only when all of its checks pass. IDs and schemas are checked before grading. The report includes all cases, failed check names, slice rates, input-file hashes, and the runner version.
 

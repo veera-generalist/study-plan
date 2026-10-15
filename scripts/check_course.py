@@ -1,28 +1,73 @@
-"""Check relative Markdown file links and required course sections offline.
+"""Check local Markdown file/heading links and required lesson sections.
 
-This deliberately does not validate external URLs or heading fragments.
+External URLs are reviewed separately; this is a focused checker for the
+inline-link and ATX-heading syntax used by this repository, not a full parser.
 """
+import html
 import re
+from collections import Counter
 from pathlib import Path
+from urllib.parse import unquote, urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
 REQUIRED = ("## Outcomes", "## Detailed tutorial:", "## Lab", "## Review and answers",
             "## Exit evidence", "## Supplementary reading and attribution")
 
 
+def outside_fences(text):
+    lines = []
+    active = None
+    for line in text.splitlines():
+        match = re.match(r"^\s*(" + chr(96) + r"{3,}|~{3,})", line)
+        if match:
+            marker = match.group(1)
+            if active is None:
+                active = marker
+            elif marker[0] == active[0] and len(marker) >= len(active):
+                active = None
+            continue
+        if active is None:
+            lines.append(line)
+    return "\n".join(lines)
+
+
+def heading_anchors(text):
+    anchors = set()
+    counts = Counter()
+    for title in re.findall(r"^#{1,6}\s+(.+?)\s*#*\s*$", outside_fences(text), re.M):
+        title = html.unescape(re.sub(r"<[^>]+>", "", title))
+        title = re.sub(r"[*_]", "", title.replace(chr(96), "")).lower()
+        slug = re.sub(r"[^\w -]", "", title).replace(" ", "-")
+        suffix = counts[slug]
+        counts[slug] += 1
+        anchors.add(slug if suffix == 0 else f"{slug}-{suffix}")
+    return anchors
+
+
+def local_link_errors(path):
+    errors = []
+    for target in re.findall(r"\]\(([^)\n]+)\)", outside_fences(path.read_text(encoding="utf-8"))):
+        parsed = urlsplit(target.strip("<>"))
+        if parsed.scheme or parsed.netloc:
+            continue
+        destination = (path.parent / unquote(parsed.path)).resolve() if parsed.path else path
+        if not destination.exists():
+            errors.append(f"{path}: missing link {target}")
+        elif parsed.fragment and destination.suffix.lower() == ".md":
+            anchor = unquote(parsed.fragment)
+            if anchor not in heading_anchors(destination.read_text(encoding="utf-8")):
+                errors.append(f"{path}: missing heading {target}")
+    return errors
+
+
 def main():
     errors = []
-    documents = list(ROOT.rglob("*.md"))
+    documents = [
+        path for path in ROOT.rglob("*.md")
+        if not any(part in {".git", ".venv"} for part in path.relative_to(ROOT).parts)
+    ]
     for path in documents:
-        if any(part in {".git", ".venv"} for part in path.relative_to(ROOT).parts):
-            continue
-        text = path.read_text(encoding="utf-8")
-        for target in re.findall(r"\]\(([^)]+)\)", text):
-            if target.startswith(("https://", "http://", "mailto:", "#")):
-                continue
-            target = target.split("#", 1)[0]
-            if target and not (path.parent / target).resolve().exists():
-                errors.append(f"{path.relative_to(ROOT)}: missing link {target}")
+        errors.extend(local_link_errors(path))
     modules = sorted((ROOT / "modules").glob("*.md"))
     if len(modules) != 12:
         errors.append(f"Expected 12 modules, found {len(modules)}")
@@ -34,7 +79,7 @@ def main():
     if errors:
         print("\n".join(errors))
         return 1
-    print(f"Checked relative file links and required sections in {len(modules)} modules.")
+    print(f"Checked local file/heading links in {len(documents)} documents and all 12 modules.")
     return 0
 
 

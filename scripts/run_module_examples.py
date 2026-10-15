@@ -1,5 +1,6 @@
 """Verify displayed lesson code matches saved examples and execute assertions."""
 import re
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -8,6 +9,9 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def main():
+    if sys.flags.optimize:
+        print("Run without Python optimization (-O/PYTHONOPTIMIZE); examples use assertions.")
+        return 1
     failures = []
     modules = sorted((ROOT / "modules").glob("*.md"))
     if len(modules) != 12:
@@ -30,6 +34,8 @@ def main():
         try:
             completed = subprocess.run(
                 [sys.executable, str(example)], cwd=ROOT,
+                env={key: value for key, value in os.environ.items()
+                     if key != "PYTHONOPTIMIZE"},
                 text=True, capture_output=True, timeout=10, check=False,
             )
         except subprocess.TimeoutExpired:

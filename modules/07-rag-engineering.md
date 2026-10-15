@@ -117,6 +117,8 @@ This is deliberately an extractive search baseline, not a full generative assist
 
 The token-overlap score is simple and can produce poor relevance decisions. Any matching token can qualify a passage. The abstention path means “no lexical overlap,” not “the corpus has no answer.” Do not describe this heuristic as validated answerability detection.
 
+The tokens function here splits search text into simple lexical units. It is not a model tokenizer and must not be used to estimate a model's context or billing token count.
+
 ### 5. Add generation without losing provenance
 
 For a live model integration, construct input containing the question and clearly identified authorized passages. State the evidence boundary and expected behavior when the answer is unsupported. Ask for source identifiers alongside the answer.

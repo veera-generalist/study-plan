@@ -134,7 +134,7 @@ Read evaluation recipes in [Claude Cookbooks](https://github.com/anthropics/clau
 
 ## Lab
 
-Collect 60 outputs with mixed quality. Independently label a subset twice, adjudicate, and record examples of disagreement. Run one judge and produce its confusion matrix against the reviewed labels. Inspect every false pass. Revise the rubric using development examples and measure on fresh reviewed outputs.
+Collect up to 60 outputs with mixed quality after starting with a smaller reviewed set. Have two reviewers label a subset independently, adjudicate, and record disagreements. If a second reviewer is unavailable, follow the [solo-review path](../COURSE_GUIDE.md#a-workable-solo-review-path) and state its limits; do not call repeated self-review independent reviewer agreement. Run one judge and produce its confusion matrix against the reviewed labels. Inspect every false pass. Revise the rubric using development examples and measure on fresh reviewed outputs.
 
 If you do not have model access, practice with a second person's judgments and analyze the same measurement problems.
 

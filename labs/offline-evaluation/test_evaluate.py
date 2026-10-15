@@ -1,6 +1,8 @@
 """Tests for meaningful grading and reporting boundary conditions."""
 import copy
 import json
+import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -39,6 +41,38 @@ class EvaluationTests(unittest.TestCase):
         }]
         with self.assertRaisesRegex(ValueError, "Coverage mismatch"):
             evaluate(self.cases, predictions)
+
+    def test_missing_null_reference_field_is_invalid_data(self):
+        cases = copy.deepcopy(self.cases)
+        del cases[2]["expected_label"]
+        with self.assertRaisesRegex(ValueError, "missing fields.*expected_label"):
+            evaluate(cases, self.predictions)
+
+    def test_nonobject_records_are_rejected(self):
+        with self.assertRaisesRegex(ValueError, "must be an object"):
+            evaluate([None], self.predictions)
+
+    def test_json_error_reports_source_line(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "invalid.jsonl"
+            path.write_text('{"id":"A"}\nnot-json\n', encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "invalid.jsonl:2: invalid JSON"):
+                read_jsonl(path)
+
+    def test_cli_invalid_case_exits_two_without_traceback(self):
+        with tempfile.TemporaryDirectory() as directory:
+            cases = copy.deepcopy(self.cases)
+            del cases[2]["expected_label"]
+            path = Path(directory) / "cases.jsonl"
+            path.write_text("\n".join(json.dumps(case) for case in cases), encoding="utf-8")
+            result = subprocess.run(
+                [sys.executable, str(ROOT / "evaluate.py"), "--cases", str(path),
+                 "--report", str(Path(directory) / "report.json")],
+                capture_output=True, text=True, check=False,
+            )
+            self.assertEqual(result.returncode, 2)
+            self.assertIn("expected_label", result.stderr)
+            self.assertNotIn("Traceback", result.stderr)
 
     def test_duplicate_case_and_prediction_ids_are_rejected(self):
         with self.assertRaisesRegex(ValueError, "Duplicate"):
